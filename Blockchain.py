@@ -1,9 +1,6 @@
 import hashlib
 import json
 
-class Blockchain:
-    def __init__(self):
-        self.chain_dict = {}
 
 
 class NodeBlockchain:
@@ -16,7 +13,7 @@ class NodeBlockchain:
         self.unsolved_block = {
             'index': len(self.chain)+1,
             'transactions': self.incomplete_transactions,
-            'previous_hash': previous_hash
+            'previous_hash': previous_hash,
             'block generator': self.id
         }
 
@@ -37,3 +34,15 @@ class NodeBlockchain:
     def add_new_transaction(self, transaction):
         self.incomplete_transactions.append(transaction)
 
+    def broadcast_transactions(self, other_node):
+        if other_node.incomplete_transactions:
+            for transaction in other_node.incomplete_transactions:
+                if transaction not in self.incomplete_transactions:
+                    self.new_transaction(transaction)
+
+
+    def resolve_conflict(self, other_node):
+        if self.incomplete_transactions:
+            for transaction in self.incomplete_transactions:
+                if transaction in block['transactions']:
+                    self.incomplete_transactions.remove(transaction)
