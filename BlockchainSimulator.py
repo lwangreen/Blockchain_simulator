@@ -1,5 +1,13 @@
-import hashlib
+import mysql.connector
+import random
+import os
 from Nodes import Nodes
+
+
+def get_node(node_id, nodes_list):
+    for node in nodes_list:
+        if node.id == node_id:
+            return node
 
 
 def write_transactions_into_file(f, transactions):
@@ -48,28 +56,101 @@ def write_into_file(filename, nodes_list):
     f.close()
 
 
+def retrieve_transaction_from_file(f, end_time):
+    transactions = []
+    t = f.readline()
+    t = t.split()
+    while t and int(t[0]) < end_time:
+        transactions.append([int(t[i]) for i in range(len(t))])
+        t = f.readline()
+        t = t.split()
+    if t:
+        transactions.append([int(t[i]) for i in range(len(t))])
+    #print("Time concern", end_time, transactions[-1][0])
+    return transactions
+
+
+def retrieve_transaction_records(records, current_time, time_interval):
+    c_list = []
+
+    while records:
+        if records[0][0] >= current_time+time_interval:
+            break
+        c_list.append(records.pop(0))
+    if c_list:
+        return c_list
+    return None
+
+
+def random_select_winner(nodes_list):
+    winners = []
+    terminate_prob = random.random()
+    node1 = random.choice(nodes_list)
+    winners.append(node1)
+    while terminate_prob < 0.8:
+        node2 = random.choice(nodes_list)
+        while node2 in winners:
+            node2 = random.choice(nodes_list)
+        winners.append(node2)
+        break
+    terminate_prob = random.random()
+    while terminate_prob < 0.8:
+        node3 = random.choice(nodes_list)
+        while node3 in winners:
+            node3 = random.choice(nodes_list)
+        winners.append(node3)
+        break
+
+    return winners
+
 current_time = 0
 end_time = 100000
+current_period_end_time = 10000
 time_interval = 600
 central_server_contact_frequency = 600 #seconds
 next_broadcast_time = 0
 nodes_list = []
-chain_dict = {} #dict: (chain:nodes list)
+current_transactions = []
+
+cnx = mysql.connector.connect(user='root', database='cambridge')
+cur = cnx.cursor(buffered=True)
+
+f = open(os.getcwd() + "\\Created_data_trace\\transaction.txt", 'r')
 
 for i in range(20):
     nodes_list.append(Nodes(i))
 
 while current_time < end_time:
+    #fetch transaction
+    if not current_transactions:
+        current_transactions = retrieve_transaction_from_file(f, current_period_end_time)
+        current_period_end_time += 10000
+    current_transactions_within_time_interval = retrieve_transaction_records(current_transactions, current_time,
+                                                                             time_interval)
+    if current_transactions_within_time_interval:
+        for t in current_transactions_within_time_interval:
+            node1 = get_node(t[1], nodes_list)
+            transaction = {
+                'sender': t[1],
+                'recipient': t[2],
+                'amount': t[3],
+                'timestamp': t[0],
+            }
+            node1.blockchain.add_new_transaction(transaction)
+
+    winners = random_select_winner(nodes_list)
+
+    for w in winners:
+        w.blockchain.add_new_block()
+        #print(w.blockchain.chain)
+
     if current_time > next_broadcast_time:
         for node1 in nodes_list:
-            chain_dict = node1.update_chain(chain_dict)
-
             for node2 in nodes_list:
+                node1.blockchain.resolve_conflict_and_update_transactions(node2.blockchain)
+                node2.blockchain.resolve_conflict_and_update_transactions(node1.blockchain)
 
-                node1.broadcast_transactions(node2)
-                node2.broadcast_transactions(node1)
-                node1.resolve_conflict(node2)
-                node2.resolve_conflict(node1)
+    write_into_file("testresult.txt", nodes_list)
 
-
-print(nodes_id)
+    current_time += time_interval
+# print(nodes_id)
