@@ -11,9 +11,10 @@ def get_node(node_id, nodes_list):
 
 
 def write_transactions_into_file(f, transactions):
+    f.write("-------------Incomplete transaction----------------:" + "\n")
     for t in transactions:
         f.write(str(t) + "\n")
-
+    f.write("\n")
 
 def write_blocks_into_file(f, blocks):
     """
@@ -31,28 +32,32 @@ def write_blocks_into_file(f, blocks):
         f.write("\n")
 
 
-def write_into_file(filename, nodes_list):
+def write_into_file(nodes_list, entire_transaction_list):
     """
     Write final blockchain information of all nodes into a file
     :param filename: the name of the file that blockchain information is stored into
     :param nodes_list: all nodes
     :return: None
     """
+    blockchain_list = []
+    filename1 = "testresult.txt"
+    filename2 = "blockinfo.txt"
     file_path = os.getcwd()+"\\Log\\"
     if not os.path.exists(file_path):
         os.makedirs(file_path)
 
-    f = open(file_path+filename, 'w+')
+    f = open(file_path+filename1, 'w+')
+    f2 = open(file_path+filename2, 'w+')
     for node in nodes_list:
         f.write("Node ID:"+str(node.id)+"\n")
-        f.write("-------------Incomplete transaction----------------:"+"\n")
         write_transactions_into_file(f, node.blockchain.incomplete_transactions)
-        f.write("\n")
+
         f.write("-------------Blockchain:---------------------------:"+"\n")
         write_blocks_into_file(f, node.blockchain.chain)
-
         f.write("-------------------------------------------------------------------------------------\n")
         f.write("\n")
+
+
     f.close()
 
 
@@ -111,7 +116,7 @@ central_server_contact_frequency = 600 #seconds
 next_broadcast_time = 0
 nodes_list = []
 current_transactions = []
-
+entire_transaction_list = []
 cnx = mysql.connector.connect(user='root', database='cambridge')
 cur = cnx.cursor(buffered=True)
 
@@ -137,6 +142,7 @@ while current_time < end_time:
                 'timestamp': t[0],
             }
             node1.blockchain.add_new_transaction(transaction)
+            entire_transaction_list.append(transaction)
 
     winners = random_select_winner(nodes_list)
 
@@ -150,7 +156,7 @@ while current_time < end_time:
                 node1.blockchain.resolve_conflict_and_update_transactions(node2.blockchain)
                 node2.blockchain.resolve_conflict_and_update_transactions(node1.blockchain)
 
-    write_into_file("testresult.txt", nodes_list)
+    write_into_file(nodes_list, entire_transaction_list)
 
     current_time += time_interval
 # print(nodes_id)
