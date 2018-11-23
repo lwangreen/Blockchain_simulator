@@ -11,10 +11,10 @@ def get_node(node_id, nodes_list):
 
 
 def write_transactions_into_file(f, transactions):
-    f.write("-------------Incomplete transaction----------------:" + "\n")
     for t in transactions:
         f.write(str(t) + "\n")
-    f.write("\n")
+
+
 
 def write_blocks_into_file(f, blocks):
     """
@@ -23,6 +23,7 @@ def write_blocks_into_file(f, blocks):
     :param blocks: the blockchain of a node
     :return: None
     """
+    f.write("-------------Blockchain:---------------------------:" + "\n")
     for block in blocks:
         for keyword in block:
             if keyword != 'transactions':
@@ -30,6 +31,8 @@ def write_blocks_into_file(f, blocks):
             else:
                 write_transactions_into_file(f, block['transactions'])
         f.write("\n")
+    f.write("-------------------------------------------------------------------------------------\n")
+    f.write("\n")
 
 
 def write_into_file(nodes_list, entire_transaction_list):
@@ -39,26 +42,64 @@ def write_into_file(nodes_list, entire_transaction_list):
     :param nodes_list: all nodes
     :return: None
     """
+
     blockchain_list = []
+    blockchain_owner = []
+    longest_blockchain = []
     filename1 = "testresult.txt"
     filename2 = "blockinfo.txt"
     file_path = os.getcwd()+"\\Log\\"
+    origin_size_entire_transactions = len(entire_transaction_list)
+
     if not os.path.exists(file_path):
         os.makedirs(file_path)
 
     f = open(file_path+filename1, 'w+')
     f2 = open(file_path+filename2, 'w+')
     for node in nodes_list:
-        f.write("Node ID:"+str(node.id)+"\n")
-        write_transactions_into_file(f, node.blockchain.incomplete_transactions)
+        if node.blockchain.chain not in blockchain_list:
+            blockchain_list.append(node.blockchain.chain)
+        if len(node.blockchain.chain) > len(longest_blockchain):
+            longest_blockchain = node.blockchain.chain.copy()
+        if len(blockchain_owner) != len(blockchain_list):
+            blockchain_owner.append([])
+        blockchain_owner[blockchain_list.index(node.blockchain.chain)].append(node.id)
 
-        f.write("-------------Blockchain:---------------------------:"+"\n")
-        write_blocks_into_file(f, node.blockchain.chain)
-        f.write("-------------------------------------------------------------------------------------\n")
+        f.write("Node ID:"+str(node.id)+"\n")
+
+        f.write("-------------Incomplete transaction----------------:" + "\n")
+        write_transactions_into_file(f, node.blockchain.incomplete_transactions)
         f.write("\n")
+
+        write_blocks_into_file(f, node.blockchain.chain)
+
+
+
+    f2.write("Summary: \n")
+    f2.write("Number of Blockchain: "+str(len(blockchain_list))+"\n")
+    count = 0
+    print(len(blockchain_list))
+    for blockchain in blockchain_list:
+        f2.write("Blockchain "+str(count)+" Length: "+str(len(blockchain))+"\n")
+        temp_entire_transaction_list = entire_transaction_list.copy()
+        print(len(temp_entire_transaction_list))
+        for block in blockchain:
+            for transaction in block['transactions']:
+                if transaction in temp_entire_transaction_list:
+                    temp_entire_transaction_list.remove(transaction)
+        print(len(temp_entire_transaction_list))
+        f2.write("Owners: "+str(blockchain_owner[blockchain_list.index(blockchain)])+"\n")
+        f2.write("Number of all transactions: " + str(origin_size_entire_transactions) + "\n")
+        f2.write("Number of transactions not in lonest chain: " + str(len(temp_entire_transaction_list)) + "\n")
+        count+=1
+
+    for blockchain in blockchain_list:
+        write_blocks_into_file(f2, blockchain)
+    #write_transactions_into_file(f2, entire_transaction_list)
 
 
     f.close()
+    f2.close()
 
 
 def retrieve_transaction_from_file(f, end_time):
@@ -148,7 +189,6 @@ while current_time < end_time:
 
     for w in winners:
         w.blockchain.add_new_block()
-        #print(w.blockchain.chain)
 
     if current_time > next_broadcast_time:
         for node1 in nodes_list:
@@ -156,7 +196,6 @@ while current_time < end_time:
                 node1.blockchain.resolve_conflict_and_update_transactions(node2.blockchain)
                 node2.blockchain.resolve_conflict_and_update_transactions(node1.blockchain)
 
-    write_into_file(nodes_list, entire_transaction_list)
-
     current_time += time_interval
-# print(nodes_id)
+
+write_into_file(nodes_list, entire_transaction_list.copy())

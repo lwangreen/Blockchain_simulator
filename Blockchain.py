@@ -2,7 +2,6 @@ import hashlib
 import json
 
 
-
 class NodeBlockchain:
     def __init__(self, id):
         self.id = id
@@ -62,7 +61,6 @@ class NodeBlockchain:
     def add_new_transaction(self, transaction):
         self.incomplete_transactions = transaction
 
-
     def resolve_conflict_and_update_transactions(self, other_node):
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
             self.chain = other_node.chain.copy()
@@ -74,7 +72,6 @@ class NodeBlockchain:
             if self.incomplete_transactions:
                 for block in self.chain:
                     self.remove_approved_incomplete_transactions(block)
-
 
     def broadcast_transactions(self, other_node):
         if other_node.incomplete_transactions:
