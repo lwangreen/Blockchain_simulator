@@ -9,6 +9,7 @@ class NodeBlockchain:
         self._incomplete_transactions = []
         self.unsolved_block = {}
         self.create_unsolved_block(None)
+        self.approved_transactions = []
 
     @property
     def incomplete_transactions(self):
@@ -44,6 +45,10 @@ class NodeBlockchain:
 
     def add_new_block(self):
         self.chain.append(self.unsolved_block)
+        for t in self.unsolved_block['transactions']:
+            if t not in self.approved_transactions:
+                self.approved_transactions.append(t)
+
         self.incomplete_transactions = []
         self.create_unsolved_block(self.hash(self.chain[-1]))
 
@@ -63,6 +68,12 @@ class NodeBlockchain:
 
     def resolve_conflict_and_update_transactions(self, other_node):
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
+            if self.chain != other_node.chain[:-1]:
+                for transaction in self.approved_transactions:
+                    for block in other_node.chain:
+                        if transaction not in block['transactions'] and transaction not in self.incomplete_transactions:
+                            self.add_new_transaction(transaction)
+
             self.chain = other_node.chain.copy()
             self.create_unsolved_block(self.hash(self.chain[-1]))
 

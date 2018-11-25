@@ -149,22 +149,24 @@ def random_select_winner(nodes_list):
 
     return winners
 
+
 current_time = 0
-end_time = 100000
+end_time = 80000
 current_period_end_time = 10000
 time_interval = 600
-central_server_contact_frequency = 600 #seconds
-next_broadcast_time = 0
+#central_server_contact_frequency = 600 #seconds
 nodes_list = []
 current_transactions = []
 entire_transaction_list = []
+min_time_interval = 0
+max_time_interval = 600
 cnx = mysql.connector.connect(user='root', database='cambridge')
 cur = cnx.cursor(buffered=True)
 
 f = open(os.getcwd() + "\\Created_data_trace\\transaction.txt", 'r')
 
-for i in range(20):
-    nodes_list.append(Nodes(i))
+for i in range(30):
+    nodes_list.append(Nodes(i, min_time_interval, max_time_interval))
 
 while current_time < end_time:
     #fetch transaction
@@ -186,16 +188,22 @@ while current_time < end_time:
             entire_transaction_list.append(transaction)
 
     winners = random_select_winner(nodes_list)
-
+    print([i.id for i in winners])
     for w in winners:
-        w.blockchain.add_new_block()
+        if w.blockchain.incomplete_transactions:
+            w.blockchain.add_new_block()
 
-    if current_time > next_broadcast_time:
-        for node1 in nodes_list:
-            for node2 in nodes_list:
+    for node1 in nodes_list:
+        for node2 in nodes_list:
+            if(current_time <= node1.next_server_contact_time <= current_time+time_interval
+                    and current_time <= node2.next_server_contact_time <= current_time+time_interval):
                 node1.blockchain.resolve_conflict_and_update_transactions(node2.blockchain)
                 node2.blockchain.resolve_conflict_and_update_transactions(node1.blockchain)
 
     current_time += time_interval
+    for node in nodes_list:
+        node.update_next_connect_time(current_time)
 
 write_into_file(nodes_list, entire_transaction_list.copy())
+for node in nodes_list:
+    print(len(node.blockchain.approved_transactions))
