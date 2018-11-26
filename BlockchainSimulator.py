@@ -159,22 +159,16 @@ def retrieve_transaction_records(records, current_time, time_interval):
 
 def random_select_winner(nodes_list):
     winners = []
-    terminate_prob = random.random()
-    node1 = random.choice(nodes_list)
-    winners.append(node1)
-    while terminate_prob < 0.8:
-        node2 = random.choice(nodes_list)
-        while node2 in winners:
-            node2 = random.choice(nodes_list)
-        winners.append(node2)
-        break
-    terminate_prob = random.random()
-    while terminate_prob < 0.8:
-        node3 = random.choice(nodes_list)
-        while node3 in winners:
-            node3 = random.choice(nodes_list)
-        winners.append(node3)
-        break
+    terminate_prob = 0
+
+    while terminate_prob < 0.8 and len(winners) < 3:
+        node = random.choice(nodes_list)
+        while node in winners:
+            node = random.choice(nodes_list)
+        winning_time = random.randint(0, 600)
+        winners.append([node, winning_time])
+
+        terminate_prob = random.random()
 
     return winners
 
@@ -217,9 +211,9 @@ while current_time < end_time:
             entire_transaction_list.append(transaction)
 
     winners = random_select_winner(nodes_list)
-    print([i.id for i in winners])
+
     for w in winners:
-        w.blockchain.add_new_block()
+        w[0].blockchain.add_new_block()
 
     for node1 in nodes_list:
         for node2 in nodes_list:
