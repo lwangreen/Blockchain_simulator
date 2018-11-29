@@ -68,31 +68,34 @@ class NodeBlockchain:
 
     def resolve_conflict_and_update_transactions(self, other_node):
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
-            if self.chain != other_node.chain[:-1]:
-                for transaction in self.approved_transactions:
-                    for block in other_node.chain:
-                        if transaction not in block['transactions'] and transaction not in self.incomplete_transactions:
-                            self.add_new_transaction(transaction)
 
             self.chain = other_node.chain.copy()
+
             self.create_unsolved_block(self.hash(self.chain[-1]))
 
             if other_node.incomplete_transactions:
                 self.broadcast_transactions(other_node)
 
-            if self.incomplete_transactions:
-                for block in self.chain:
-                    self.remove_approved_incomplete_transactions(block)
+            # If the transactions are approved but not in current longest chain:
+            # Remove it from approved transaction list and add it back to incomplete transaction again, and wait for
+            # next block generation
+            for transaction in self.approved_transactions:
+                if transaction not in other_node.approved_transactions:
+                    self.incomplete_transactions = transaction
+                    self.approved_transactions.remove(transaction)
+
+            # If the transactions in the longest chain are not in self approved transaction list
+            for block in self.chain:
+                for transaction in block['transactions']:
+                    if transaction not in self.approved_transactions:
+                        self.approved_transactions.append(transaction)
+                    if transaction in self.incomplete_transactions:
+                        self.incomplete_transactions.remove(transaction)
 
     def broadcast_transactions(self, other_node):
         if other_node.incomplete_transactions:
             for transaction in other_node.incomplete_transactions:
-                if transaction not in self.incomplete_transactions:
+                if transaction not in self.incomplete_transactions and transaction not in self.approved_transactions:
                     self.add_new_transaction(transaction)
 
-    def remove_approved_incomplete_transactions(self, block):
-        if self.incomplete_transactions:
-            for transaction in self.incomplete_transactions:
-                if transaction in block['transactions']:
-                    self.incomplete_transactions.remove(transaction)
 

@@ -210,15 +210,6 @@ while current_time < end_time:
             node1.blockchain.add_new_transaction(transaction)
             entire_transaction_list.append(transaction)
 
-    winners = random_select_winner(nodes_list)
-    print(winners)
-    for winner_index in range(len(winners)):
-        #if winner_index > 0:
-            #if winners[winner_index][1] - winners[winner_index-1][1] < 100:
-                #winners[winner_index][0].blockchain.add_new_block()
-        #else:
-        winners[winner_index][0].blockchain.add_new_block()
-
     for node1 in nodes_list:
         for node2 in nodes_list:
             if(current_time <= node1.next_server_contact_time <= current_time+time_interval
@@ -226,12 +217,24 @@ while current_time < end_time:
                 node1.blockchain.resolve_conflict_and_update_transactions(node2.blockchain)
                 node2.blockchain.resolve_conflict_and_update_transactions(node1.blockchain)
 
+    winners = random_select_winner(nodes_list)
+    for winner_index in range(len(winners)):
+        if winner_index > 0:
+            if winners[winner_index][1] - winners[winner_index-1][1] < 100:
+                winners[winner_index][0].blockchain.add_new_block()
+        else:
+            winners[winner_index][0].blockchain.add_new_block()
+
     current_time += time_interval
     for node in nodes_list:
         node.update_next_connect_time(current_time)
+    print(current_time)
 
 blockchain_list, blockchain_owner = write_node_blockchain_into_file(nodes_list)
 write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list)
 
+app_tran = 0
 for node in nodes_list:
     print(len(node.blockchain.approved_transactions))
+    app_tran += len(node.blockchain.approved_transactions)
+print(app_tran)
