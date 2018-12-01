@@ -8,8 +8,9 @@ class NodeBlockchain:
         self.chain = []
         self._incomplete_transactions = []
         self.unsolved_block = {}
-        self.create_unsolved_block(None)
         self.approved_transactions = []
+        self.max_trans_per_block = 10
+        self.create_unsolved_block(None)
 
     @property
     def incomplete_transactions(self):
@@ -30,15 +31,19 @@ class NodeBlockchain:
         if not transaction:
             self._incomplete_transactions = []
 
-        # add new transaction into incomplete_transaction and start PoW thread all over again
+        # remove the transactions that was added in to the new block
+        elif type(transaction) == list:
+            self._incomplete_transactions = transaction
+
+        # add new incomplete transaction into the incomplete transaction list
         else:
             self._incomplete_transactions.append(transaction)
-            self.unsolved_block['transactions'] = self._incomplete_transactions.copy()
+            self.unsolved_block['transactions'] = self._incomplete_transactions.copy()[:self.max_trans_per_block]
 
     def create_unsolved_block(self, previous_hash):
         self.unsolved_block = {
             'index': len(self.chain)+1,
-            'transactions': self.incomplete_transactions,
+            'transactions': self.incomplete_transactions[:self.max_trans_per_block],
             'previous_hash': previous_hash,
             'block generator': self.id
         }
@@ -49,7 +54,7 @@ class NodeBlockchain:
             if t not in self.approved_transactions:
                 self.approved_transactions.append(t)
 
-        self.incomplete_transactions = []
+        self.incomplete_transactions = self.incomplete_transactions[self.max_trans_per_block:]
         self.create_unsolved_block(self.hash(self.chain[-1]))
 
     def hash(self, block):
