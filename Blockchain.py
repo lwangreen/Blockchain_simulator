@@ -9,7 +9,7 @@ class NodeBlockchain:
         self._incomplete_transactions = []
         self.unsolved_block = {}
         self.approved_transactions = []
-        self.max_trans_per_block = 10
+        self.max_trans_per_block = 50
         self.create_unsolved_block(None)
 
     @property

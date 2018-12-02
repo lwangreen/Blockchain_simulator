@@ -115,11 +115,12 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
         count+=1
 
     f2.write("\n")
-    f2.write("Block difference \n")
+
 
     index = 0
 
     if len(blockchain_list) > 1:
+        f2.write("Block difference: \n")
         while index < len(blockchain_list[0]):
             if is_block_different(index, blockchain_list):
                 for blockchain in blockchain_list:
@@ -127,8 +128,8 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
                     if(index < len(blockchain)):
                         write_blocks_into_file(f2, [blockchain[index]])
             index+=1
-
-    f2.write("\n")
+        f2.write("-------------------------------------------------------------------------------------\n")
+        f2.write("\n")
     for blockchain in blockchain_list:
         write_blocks_into_file(f2, blockchain)
     #write_transactions_into_file(f2, entire_transaction_list)
@@ -207,10 +208,11 @@ def cal_contact_frequency_range(cfreq_arg, time_interval):
 def running():
     current_time = 0
     end_time = 100000
-    current_period_end_time = 10000
+    #current_period_end_time = 10000
     time_interval = 600
     nodes_list = []
-    current_transactions = []
+    winners = []
+    #current_transactions = []
     entire_transaction_list = []
     min_cfreq_range, max_cfreq_range = cal_contact_frequency_range(contact_freq, time_interval)
     #f = open(os.getcwd() + "\\Created_data_trace\\transaction.txt", 'r')
@@ -245,12 +247,6 @@ def running():
                 node1.blockchain.add_new_transaction(transaction)
                 entire_transaction_list.append(transaction)
             winners = random_select_winner(nodes_list)
-            print(winners)
-            for winner_index in range(len(winners)):
-                if winner_index > 0:
-                    if winners[winner_index][1] - winners[winner_index - 1][1] < 100:
-                        winners[winner_index][0].blockchain.add_new_block()
-
 
         for node1 in nodes_list:
             for node2 in nodes_list:
@@ -260,9 +256,13 @@ def running():
                     node1.blockchain.resolve_conflict_and_update_transactions(node2.blockchain)
                     node2.blockchain.resolve_conflict_and_update_transactions(node1.blockchain)
 
-
+        for winner_index in range(len(winners)):
+            if winner_index > 0:
+                if winners[winner_index][1] - winners[winner_index - 1][1] < 100:
+                    winners[winner_index][0].blockchain.add_new_block()
 
         current_time += time_interval
+        winners = []
         for node in nodes_list:
             node.update_next_connect_time(current_time)
         print(current_time)
