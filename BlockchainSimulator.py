@@ -77,7 +77,7 @@ def write_node_blockchain_into_file(nodes_list):
         f.write("Node ID:"+str(node.id)+"\n")
 
         f.write("-------------Incomplete transaction----------------:" + "\n")
-        write_transactions_into_file(f, node.blockchain.incomplete_transactions)
+        write_transactions_into_file(f, node.blockchain.mempool)
         f.write("\n")
 
         write_blocks_into_file(f, node.blockchain.chain)
@@ -271,8 +271,8 @@ def running():
     write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list)
 
     #app_tran = 0
-    #for node in nodes_list:
-        #print(len(node.blockchain.approved_transactions))
+    for node in nodes_list:
+        print(len(node.blockchain.mempool))
         #app_tran += len(node.blockchain.approved_transactions)
     #print(app_tran)
 

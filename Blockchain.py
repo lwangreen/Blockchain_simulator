@@ -6,20 +6,21 @@ class NodeBlockchain:
     def __init__(self, id):
         self.id = id
         self.chain = []
-        self._incomplete_transactions = []
+        self._mempool = []
         self.unsolved_block = {}
         self.approved_transactions = []
         self.max_trans_per_block = 50
+        self.max_trans_in_mempool = 200
         self.create_unsolved_block(None)
 
     @property
-    def incomplete_transactions(self):
-        return self._incomplete_transactions
+    def mempool(self):
+        return self._mempool
 
-    @incomplete_transactions.setter
-    def incomplete_transactions(self, transaction):
+    @mempool.setter
+    def mempool(self, transaction):
         """
-        Observer pattern that keeps track on self._incomplete_transactions list.
+        Observer pattern that keeps track on self._mempool list.
         PoW is only triggered when there are incompleted transactions exist.
         If there is any new transaction added into the list, we start the PoW all over again.
         When a new block is generated, we clean the incomplete transaction list and shut down the PoW thread
@@ -29,21 +30,22 @@ class NodeBlockchain:
 
         # clean transaction list after a block is generated.
         if not transaction:
-            self._incomplete_transactions = []
+            self._mempool = []
 
         # remove the transactions that was added in to the new block
         elif type(transaction) == list:
-            self._incomplete_transactions = transaction
+            self._mempool = transaction
 
         # add new incomplete transaction into the incomplete transaction list
         else:
-            self._incomplete_transactions.append(transaction)
-            self.unsolved_block['transactions'] = self._incomplete_transactions.copy()[:self.max_trans_per_block]
+            if len(self._mempool) < self.max_trans_in_mempool:
+                self._mempool.append(transaction)
+                self.unsolved_block['transactions'] = self._mempool.copy()[:self.max_trans_per_block]
 
     def create_unsolved_block(self, previous_hash):
         self.unsolved_block = {
             'index': len(self.chain)+1,
-            'transactions': self.incomplete_transactions[:self.max_trans_per_block],
+            'transactions': self.mempool[:self.max_trans_per_block],
             'previous_hash': previous_hash,
             'block generator': self.id
         }
@@ -54,7 +56,7 @@ class NodeBlockchain:
             if t not in self.approved_transactions:
                 self.approved_transactions.append(t)
 
-        self.incomplete_transactions = self.incomplete_transactions[self.max_trans_per_block:]
+        self.mempool = self.mempool[self.max_trans_per_block:]
         self.create_unsolved_block(self.hash(self.chain[-1]))
 
     def hash(self, block):
@@ -69,7 +71,7 @@ class NodeBlockchain:
         return hashlib.sha256(block_string).hexdigest()
 
     def add_new_transaction(self, transaction):
-        self.incomplete_transactions = transaction
+        self.mempool = transaction
 
     def resolve_conflict_and_update_transactions(self, other_node):
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
@@ -78,7 +80,7 @@ class NodeBlockchain:
 
             self.create_unsolved_block(self.hash(self.chain[-1]))
 
-            if other_node.incomplete_transactions:
+            if other_node.mempool:
                 self.broadcast_transactions(other_node)
 
             # If the transactions are approved but not in current longest chain:
@@ -86,7 +88,7 @@ class NodeBlockchain:
             # next block generation
             for transaction in self.approved_transactions:
                 if transaction not in other_node.approved_transactions:
-                    self.incomplete_transactions = transaction
+                    self.mempool = transaction
                     self.approved_transactions.remove(transaction)
 
             # If the transactions in the longest chain are not in self approved transaction list
@@ -94,13 +96,13 @@ class NodeBlockchain:
                 for transaction in block['transactions']:
                     if transaction not in self.approved_transactions:
                         self.approved_transactions.append(transaction)
-                    if transaction in self.incomplete_transactions:
-                        self.incomplete_transactions.remove(transaction)
+                    if transaction in self.mempool:
+                        self.mempool.remove(transaction)
 
     def broadcast_transactions(self, other_node):
-        if other_node.incomplete_transactions:
-            for transaction in other_node.incomplete_transactions:
-                if transaction not in self.incomplete_transactions and transaction not in self.approved_transactions:
+        if other_node.mempool:
+            for transaction in other_node.mempool:
+                if transaction not in self.mempool and transaction not in self.approved_transactions:
                     self.add_new_transaction(transaction)
 
 
