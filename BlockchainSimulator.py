@@ -5,7 +5,8 @@ import os
 from Nodes import Nodes
 
 contact_freq = 0
-trans_rate = 0
+trans_rate = 1
+
 
 def get_node(node_id, nodes_list):
     for node in nodes_list:
@@ -76,8 +77,10 @@ def write_node_blockchain_into_file(nodes_list):
 
         f.write("Node ID:"+str(node.id)+"\n")
 
-        f.write("-------------Incomplete transaction----------------:" + "\n")
+        f.write("-------------Unapproved transaction----------------:" + "\n")
         write_transactions_into_file(f, node.blockchain.mempool)
+        for block in node.blockchain.chain[-6:]:
+            write_transactions_into_file(f, block['transactions'])
         f.write("\n")
 
         write_blocks_into_file(f, node.blockchain.chain)
@@ -111,7 +114,7 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
                     temp_entire_transaction_list.remove(transaction)
         f2.write("Owners: "+str(blockchain_owner[blockchain_list.index(blockchain)])+"\n")
         f2.write("Number of all transactions: " + str(origin_size_entire_transactions) + "\n")
-        f2.write("Number of transactions not in lonest chain: " + str(len(temp_entire_transaction_list)) + "\n")
+        f2.write("Number of transactions not in the longest chain: " + str(len(temp_entire_transaction_list)) + "\n")
         count+=1
 
     f2.write("\n")
@@ -162,6 +165,7 @@ def retrieve_transaction_records(records, current_time, time_interval):
         return c_list
     return None
 
+
 def generate_transactions(nodes_list, time, time_interval):
     global trans_rate
     trans_count = 0
@@ -200,10 +204,12 @@ def random_select_winner(nodes_list):
 
     return winners
 
+
 def cal_contact_frequency_range(cfreq_arg, time_interval):
     min_cfreq_range = int(cfreq_arg/time_interval) * time_interval
     max_cfreq_range = min_cfreq_range + time_interval
     return min_cfreq_range, max_cfreq_range
+
 
 def running():
     current_time = 0
@@ -275,6 +281,7 @@ def running():
         print(len(node.blockchain.mempool))
         #app_tran += len(node.blockchain.approved_transactions)
     #print(app_tran)
+
 
 def main(argv):
     global contact_freq
