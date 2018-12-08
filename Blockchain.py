@@ -10,7 +10,7 @@ class NodeBlockchain:
         self.unsolved_block = {}
         self.approved_transactions = []
         self.max_trans_per_block = 50
-        self.max_trans_in_mempool = 200
+        self.max_trans_in_mempool = 4096
         self.create_unsolved_block(None)
 
     @property
@@ -38,25 +38,27 @@ class NodeBlockchain:
 
         # add new incomplete transaction into the incomplete transaction list
         else:
-            if len(self._mempool) < self.max_trans_in_mempool:
-                self._mempool.append(transaction)
-                self.unsolved_block['transactions'] = self._mempool.copy()[:self.max_trans_per_block]
+            #if len(self._mempool) < self.max_trans_in_mempool:
+            self._mempool.append(transaction)
+            self.unsolved_block['transactions'] = self._mempool.copy()#[:self.max_trans_per_block]
 
     def create_unsolved_block(self, previous_hash):
         self.unsolved_block = {
             'index': len(self.chain)+1,
-            'transactions': self.mempool[:self.max_trans_per_block],
+            'transactions': self.mempool,#[:self.max_trans_per_block],
             'previous_hash': previous_hash,
             'block generator': self.id
         }
 
-    def add_new_block(self):
+    def add_new_block(self, time):
+        self.unsolved_block['time'] = time
         self.chain.append(self.unsolved_block)
         for t in self.unsolved_block['transactions']:
             if t not in self.approved_transactions:
                 self.approved_transactions.append(t)
 
-        self.mempool = self.mempool[self.max_trans_per_block:]
+        #self.mempool = self.mempool[self.max_trans_per_block:]
+        self.mempool = []
         self.create_unsolved_block(self.hash(self.chain[-1]))
 
     def hash(self, block):
@@ -73,15 +75,12 @@ class NodeBlockchain:
     def add_new_transaction(self, transaction):
         self.mempool = transaction
 
-    def resolve_conflict_and_update_transactions(self, other_node):
+    def resolve_conflict(self, other_node):
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
 
             self.chain = other_node.chain.copy()
 
             self.create_unsolved_block(self.hash(self.chain[-1]))
-
-            if other_node.mempool:
-                self.broadcast_transactions(other_node)
 
             # If the transactions are approved but not in current longest chain:
             # Remove it from approved transaction list and add it back to incomplete transaction again, and wait for
