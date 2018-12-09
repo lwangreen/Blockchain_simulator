@@ -263,12 +263,12 @@ def running():
         if winners:
             for winner_index in range(len(winners)):
                 if winner_index > 0:
-                    if winners[winner_index][1] - winners[winner_index - 1][1] < 100:
+                    if winners[winner_index][0] - winners[winner_index - 1][0] < 100:
                         if not RANDOM_WINNERS:
                             winner = get_node(winners[winner_index][1], nodes_list)
                             winner.blockchain.add_new_block(winners[winner_index][0])
                         else:
-                            winners[winner_index][1].blockchain.add_new_block()
+                            winners[winner_index][1].blockchain.add_new_block(winners[winner_index][0])
 
         current_time += time_interval
 
