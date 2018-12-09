@@ -38,14 +38,14 @@ class NodeBlockchain:
 
         # add new incomplete transaction into the incomplete transaction list
         else:
-            #if len(self._mempool) < self.max_trans_in_mempool:
+            # if len(self._mempool) < self.max_trans_in_mempool:
             self._mempool.append(transaction)
-            self.unsolved_block['transactions'] = self._mempool.copy()#[:self.max_trans_per_block]
+            self.unsolved_block['transactions'] = self._mempool.copy()  # [:self.max_trans_per_block]
 
     def create_unsolved_block(self, previous_hash):
         self.unsolved_block = {
             'index': len(self.chain)+1,
-            'transactions': self.mempool,#[:self.max_trans_per_block],
+            'transactions': self.mempool,  # [:self.max_trans_per_block],
             'previous_hash': previous_hash,
             'block generator': self.id
         }
@@ -57,7 +57,7 @@ class NodeBlockchain:
             if t not in self.approved_transactions:
                 self.approved_transactions.append(t)
 
-        #self.mempool = self.mempool[self.max_trans_per_block:]
+        # self.mempool = self.mempool[self.max_trans_per_block:]
         self.mempool = []
         self.create_unsolved_block(self.hash(self.chain[-1]))
 

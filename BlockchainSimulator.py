@@ -130,72 +130,36 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
                     f2.write("Blockchain "+str(blockchain_list.index(blockchain))+"\n")
                     if(index < len(blockchain)):
                         write_blocks_into_file(f2, [blockchain[index]])
-            index+=1
+            index += 1
         f2.write("-------------------------------------------------------------------------------------\n")
         f2.write("\n")
     for blockchain in blockchain_list:
         write_blocks_into_file(f2, blockchain)
-    #write_transactions_into_file(f2, entire_transaction_list)
-
     f2.close()
 
 
-def retrieve_transaction_from_file(f, end_time):
-    transactions = []
+def retrieve_records_from_file(f, end_time):
+    records = []
     t = f.readline()
     t = t.split()
     while t and int(t[0]) < end_time:
-        transactions.append([int(t[i]) for i in range(len(t))])
+        records.append([int(t[i]) for i in range(len(t))])
         t = f.readline()
         t = t.split()
     if t:
-        transactions.append([int(t[i]) for i in range(len(t))])
-    #print("Time concern", end_time, transactions[-1][0])
-    return transactions
+        records.append([int(t[i]) for i in range(len(t))])
+    return records
 
 
-def retrieve_winners_from_file(f, end_time):
-    winners = []
-    w = f.readline()
-    w = w.split()
-    while w and int(w[0]) < end_time:
-        winners.append([int(w[i]) for i in range(len(w))])
-        w = f.readline()
-        w = w.split()
-    if w:
-        winners.append([int(w[i]) for i in range(len(w))])
-    return winners
-
-
-def retrieve_transaction_records(records, current_time, time_interval):
-    c_list = []
-
+def retrieve_records_from_temp_storage(records, current_time, time_interval):
+    r_list = []
     while records:
         if records[0][0] >= current_time+time_interval:
             break
-        transaction = {
-            'sender': records[0][1],
-            'recipient': records[0][2],
-            'amount': records[0][3],
-            'timestamp': records[0][0],
-        }
-        c_list.append(transaction)
+        r_list.append(records[0])
         records.pop(0)
-    if c_list:
-        return c_list
-    return None
-
-
-def retrieve_winners_records(winners, current_time, time_interval):
-    w_list = []
-
-    while winners:
-        if winners[0][0] >= current_time+time_interval:
-            break
-        w_list.append(winners[0])
-        winners.pop(0)
-    if w_list:
-        return w_list
+    if r_list:
+        return r_list
     return None
 
 
@@ -211,13 +175,7 @@ def generate_transactions(nodes_list, time, time_interval):
             node2 = random.randint(0, len(nodes_list)-1)
         time = random.randint(time, time+time_interval)
         amount = random.randint(0, 9999)
-        transaction = {
-            'sender': node1,
-            'recipient': node2,
-            'amount': amount,
-            'timestamp': time,
-        }
-        transactions.append(transaction)
+        transactions.append([time, node1, node2, amount])
         trans_count += 1
     return transactions
 
@@ -232,9 +190,7 @@ def random_select_winner(nodes_list):
             node = random.choice(nodes_list)
         ongoing_winning_time += random.randint(0, 200)
         winners.append([ongoing_winning_time, node])
-
         terminate_prob = random.random()
-
     return winners
 
 
@@ -247,7 +203,6 @@ def cal_contact_frequency_range(cfreq_arg, time_interval):
 def running():
     current_time = 0
     end_time = 120000
-
     time_interval = 600
     nodes_list = []
     winners = []
@@ -268,19 +223,24 @@ def running():
 
     while current_time < end_time:
         # fetch transaction
-
         if current_time < end_time-20000:
             if RANDOM_TRANS:
                 current_transactions = generate_transactions(nodes_list, current_time, time_interval)
             else:
                 if not current_transactions_within_10000:
-                    current_transactions_within_10000 = retrieve_transaction_from_file(f, current_period_end_time)
-                current_transactions = retrieve_transaction_records(current_transactions_within_10000, current_time,
-                                       time_interval)
+                    current_transactions_within_10000 = retrieve_records_from_file(f, current_period_end_time)
+                current_transactions = retrieve_records_from_temp_storage(current_transactions_within_10000,
+                                                                          current_time, time_interval)
 
             if current_transactions:
-                for transaction in current_transactions:
-                    node1 = get_node(transaction['sender'], nodes_list)
+                for t in current_transactions:
+                    node1 = get_node(t[1], nodes_list)
+                    transaction = {
+                        'sender': t[1],
+                        'recipient': t[2],
+                        'amount': t[3],
+                        'timestamp': t[0],
+                    }
                     node1.blockchain.add_new_transaction(transaction)
                     entire_transaction_list.append(transaction)
 
@@ -288,9 +248,8 @@ def running():
                 winners = random_select_winner(nodes_list)
             else:
                 if not current_winners_within_10000:
-                    current_winners_within_10000 = retrieve_winners_from_file(f2, current_period_end_time)
-
-                winners = retrieve_winners_records(current_winners_within_10000, current_time, time_interval)
+                    current_winners_within_10000 = retrieve_records_from_file(f2, current_period_end_time)
+                winners = retrieve_records_from_temp_storage(current_winners_within_10000, current_time, time_interval)
 
         for node1 in nodes_list:
             for node2 in nodes_list:
@@ -307,7 +266,7 @@ def running():
                     if winners[winner_index][1] - winners[winner_index - 1][1] < 100:
                         if not RANDOM_WINNERS:
                             winner = get_node(winners[winner_index][1], nodes_list)
-                            winner.blockchain.add_new_block(current_time)
+                            winner.blockchain.add_new_block(winners[winner_index][0])
                         else:
                             winners[winner_index][1].blockchain.add_new_block()
 
@@ -324,12 +283,12 @@ def running():
     blockchain_list, blockchain_owner = write_node_blockchain_into_file(nodes_list)
     write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list)
 
-    #app_tran = 0
+    # app_tran = 0
     for node in nodes_list:
         print("Node: "+str(node.id))
         print(node.blockchain.mempool)
-        #app_tran += len(node.blockchain.approved_transactions)
-    #print(app_tran)
+        # app_tran += len(node.blockchain.approved_transactions)
+    # print(app_tran)
 
 
 def main(argv):
