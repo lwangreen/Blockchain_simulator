@@ -73,7 +73,8 @@ class NodeBlockchain:
         return hashlib.sha256(block_string).hexdigest()
 
     def add_new_transaction(self, transaction):
-        self.mempool = transaction
+        if transaction not in self.mempool and transaction not in self.approved_transactions:
+            self.mempool = transaction
 
     def resolve_conflict(self, other_node):
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
