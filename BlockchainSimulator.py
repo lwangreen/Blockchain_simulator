@@ -117,6 +117,7 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
         f2.write("Blockchain "+str(count)+" Length: "+str(len(blockchain))+"\n")
         last_index = find_last_block_with_trans(blockchain)
         f2.write("Convergence speed:"+ str(blockchain[last_index]['time'])+"\n")
+        f2.write("Timestamp of the last block:" + str(blockchain[-1]['time']) + "\n")
         temp_entire_transaction_list = entire_transaction_list.copy()
         for block in blockchain:
             for transaction in block['transactions']:
@@ -282,7 +283,7 @@ def running():
                 current_winners_within_10000 = retrieve_records_from_file(f2, current_period_end_time)
             winners = retrieve_records_from_temp_storage(current_winners_within_10000, current_time, time_interval)
             if not winners:
-                winners = random_select_winner(current_time, nodes_list, 3)
+                winners = random_select_winner(current_time, nodes_list, 1)
 
         if winners:
             for winner_index in range(len(winners)):
