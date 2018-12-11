@@ -23,7 +23,7 @@ def random_select_winner(len_nodes_list):
 
 
 dur = 600       # Time flows by 600 secs a time
-endtime = 100000
+endtime = 1000000
 time = 0
 count = 0
 
@@ -32,7 +32,7 @@ file_path = os.getcwd() + "\\Created_data_trace\\"
 if not os.path.exists(file_path):
     os.makedirs(file_path)
 
-f = open(file_path+"winners.txt", 'w+')
+f = open(file_path+"winners_long.txt", 'w+')
 count = 0
 
 while time < endtime:

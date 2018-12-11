@@ -250,7 +250,7 @@ def running():
     if not RANDOM_WINNERS:
         current_period_end_time = 10000
         current_winners_within_10000 = []
-        f2 = open(os.getcwd() +"\\Created_data_trace\\winners.txt", 'r')
+        f2 = open(os.getcwd() +"\\Created_data_trace\\winners_long.txt", 'r')
 
     for i in range(20):
         nodes_list.append(Nodes(i, min_cfreq_range, max_cfreq_range))
