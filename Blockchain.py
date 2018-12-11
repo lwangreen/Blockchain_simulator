@@ -10,7 +10,7 @@ class NodeBlockchain:
         self.unsolved_block = {}
         self.approved_transactions = []
         self.max_trans_per_block = 50
-        self.max_trans_in_mempool = 4096
+        #self.max_trans_in_mempool = 4096
         self.create_unsolved_block(None)
 
     @property
