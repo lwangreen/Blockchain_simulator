@@ -1,14 +1,4 @@
-python BlockchainSimulator.py -c 0 -t 1 -o statistic_0_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 600 -t 1 -o statistic_600_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 1200 -t 1 -o statistic_1200_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 1800 -t 1 -o statistic_1800_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 2400 -t 1 -o statistic_2400_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 3000 -t 1 -o statistic_3000_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 3600 -t 1 -o statistic_3600_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 4200 -t 1 -o statistic_4200_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 4800 -t 1 -o statistic_4800_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 5400 -t 1 -o statistic_5400_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 6000 -t 1 -o statistic_6000_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 6600 -t 1 -o statistic_6600_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 7200 -t 1 -o statistic_7200_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
-python BlockchainSimulator.py -c 7800 -t 1 -o statistic_7800_1.txt --RANDOM_TRANS 0 --RANDOM_WINNERS 0
+call autorun_all_false.bat
+call autorun_RC.bat
+call autorun_RSC.bat
+call autorun_RC_RSC.bat
