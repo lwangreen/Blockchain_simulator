@@ -1,0 +1,13 @@
+Contact time interval, Lastest block timestamp with transactions, Convergence speed, Number of blockchain, Length of the longest blockchain, Block index with forks occurred, The last block contains transactions
+12000-12600, 113574, 125507, 1, 68, None, 62
+18000-18600, 132972, 145011, 1, 72, None, 65
+24000-24600, 152236, 172395, 1, 76, None, 66
+30000-30600, 189255, 211358, 1, 82, None, 72
+36000-36600, 231748, 255912, 1, 93, None, 82
+42000-42600, 213793, 255266, 1, 94, None, 77
+48000-48600, 295343, 336980, 1, 121, None, 102
+54000-54600, 274683, 324212, 1, 106, None, 89
+60000-60600, 303234, 363713, 3, 123, 122, 102
+66000-66600, 333038, 399349, 1, 138, None, 116
+72000-72600, 363334, 414764, 1, 134, None, 113
+78000-78600, 396044, 471772, 3, 151, 150, 130

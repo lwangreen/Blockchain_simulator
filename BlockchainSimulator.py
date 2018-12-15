@@ -40,9 +40,8 @@ def retrieve_records_from_temp_storage(records, current_time, time_interval):
 
 
 def generate_transactions(nodes_list, time, time_interval):
-    global TRANS_RATE
     trans_count = 0
-    total_trans = TRANS_RATE * len(nodes_list)
+    total_trans = GC.TRANS_RATE * len(nodes_list)
     transactions = []
     while trans_count < total_trans:
         node1 = random.randint(0, len(nodes_list)-1)
@@ -126,12 +125,13 @@ def running():
 
     while current_time < end_time or not is_only_one_blockchain_left(nodes_list):
         # fetch transaction
-        if GC.RANDOM_TRANS:
-            current_transactions = generate_transactions(nodes_list, current_time, time_interval)
-        else:
-            if not current_transactions_within_10000:
-                current_transactions_within_10000 = retrieve_records_from_file(f, current_period_end_time)
-            current_transactions = retrieve_records_from_temp_storage(current_transactions_within_10000,
+        if current_time < end_time:
+            if GC.RANDOM_TRANS:
+                current_transactions = generate_transactions(nodes_list, current_time, time_interval)
+            else:
+                if not current_transactions_within_10000:
+                    current_transactions_within_10000 = retrieve_records_from_file(f, current_period_end_time)
+                current_transactions = retrieve_records_from_temp_storage(current_transactions_within_10000,
                                                                           current_time, time_interval)
         if current_transactions:
             for t in current_transactions:

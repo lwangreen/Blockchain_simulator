@@ -181,8 +181,8 @@ def write_csv_statistics_file(blockchain_list):
         os.makedirs(file_path)
     if not os.path.exists(file_path+stat_file):
         f = open(os.getcwd()+"\\Stats\\"+stat_file, 'w+')
-        f.write("Contact frequency, Convergence speed, Last block timestamp, Number of blockchain, "
-                "Length of the longest blockchain, Block index that difference occurred, "
+        f.write("Contact time interval, Lastest block timestamp with transactions, Convergence speed, "
+                "Number of blockchain, Length of the longest blockchain, Block index with forks occurred, "
                 "The last block contains transactions"+"\n")
         f.close()
     f = open(os.getcwd()+"\\Stats\\"+stat_file, 'a')
