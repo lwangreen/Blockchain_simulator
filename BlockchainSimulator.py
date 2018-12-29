@@ -39,15 +39,15 @@ def retrieve_records_from_temp_storage(records, current_time, time_interval):
     return None
 
 
-def generate_transactions(nodes_list, time, time_interval):
+def generate_transactions(time, time_interval):
     trans_count = 0
-    total_trans = GC.TRANS_RATE * len(nodes_list)
+    total_trans = GC.TRANS_RATE # * len(nodes_list)
     transactions = []
     while trans_count < total_trans:
-        node1 = random.randint(0, len(nodes_list)-1)
-        node2 = random.randint(0, len(nodes_list)-1)
+        node1 = random.randint(0, GC.NUM_OF_NODES-1)
+        node2 = random.randint(0, GC.NUM_OF_NODES-1)
         while node2 == node1:
-            node2 = random.randint(0, len(nodes_list)-1)
+            node2 = random.randint(0, GC.NUM_OF_NODES-1)
         time = random.randint(time, time+time_interval)
         amount = random.randint(0, 9999)
         transactions.append([time, node1, node2, amount])
@@ -55,13 +55,14 @@ def generate_transactions(nodes_list, time, time_interval):
     return transactions
 
 
-def random_select_winner(time, nodes_list, num_of_winners):
+def random_select_winner(time, num_of_winners):
+
     winners = []
 
     terminate_prob = 0
     ongoing_winning_time = 0
     while terminate_prob < 0.8 and len(winners) < num_of_winners:
-        node = random.randint(0, len(nodes_list)-1)
+        node = random.randint(0, GC.NUM_OF_NODES-1)
         ongoing_winning_time += random.randint(0, 200)
         winners.append([time+ongoing_winning_time, node])
         terminate_prob = random.random()
@@ -109,6 +110,7 @@ def running():
     time_interval = 600
     nodes_list = []
     entire_transaction_list = []
+    num_of_blocks_in_fork = []
     min_cfreq_range, max_cfreq_range = cal_contact_frequency_range(GC.CONTACT_FREQ, time_interval)
     if not GC.RANDOM_TRANS:
         current_period_end_time = 10000
@@ -120,14 +122,14 @@ def running():
         current_winners_within_10000 = []
         f2 = open(os.getcwd() +"\\Created_data_trace\\winners_long.txt", 'r')
 
-    for i in range(20):
+    for i in range(GC.NUM_OF_NODES):
         nodes_list.append(Nodes(i, min_cfreq_range, max_cfreq_range, GC.RANDOM_START_CONNECT_TIME, GC.RANDOM_CONNECT_TIME))
 
     while current_time < end_time or not is_only_one_blockchain_left(nodes_list):
         # fetch transaction
         if current_time < end_time:
             if GC.RANDOM_TRANS:
-                current_transactions = generate_transactions(nodes_list, current_time, time_interval)
+                current_transactions = generate_transactions(current_time, time_interval)
             else:
                 if not current_transactions_within_10000:
                     current_transactions_within_10000 = retrieve_records_from_file(f, current_period_end_time)
@@ -146,13 +148,13 @@ def running():
                 entire_transaction_list.append(transaction)
 
         if GC.RANDOM_WINNERS:
-            winners = random_select_winner(current_time, nodes_list, 3)
+            winners = random_select_winner(current_time, GC.NUM_OF_WINNERS)
         else:
             if not current_winners_within_10000:
                 current_winners_within_10000 = retrieve_records_from_file(f2, current_period_end_time)
             winners = retrieve_records_from_temp_storage(current_winners_within_10000, current_time, time_interval)
             if not winners:
-                winners = random_select_winner(current_time, nodes_list, 1)
+                winners = random_select_winner(current_time, GC.NUM_OF_WINNERS)
 
         if winners:
             for winner_index in range(len(winners)):
@@ -165,21 +167,26 @@ def running():
                         and current_time <= node2.next_server_contact_time <= current_time + time_interval):
                     node1.blockchain.broadcast_transactions(node2.blockchain)
                     node2.blockchain.broadcast_transactions(node1.blockchain)
-                    node1.blockchain.resolve_conflict(node2.blockchain)
-                    node2.blockchain.resolve_conflict(node1.blockchain)
+                    num_of_block_after_tran_in_fork_1 = node1.blockchain.resolve_conflict(node2.blockchain)
+                    num_of_block_after_tran_in_fork_2 = node2.blockchain.resolve_conflict(node1.blockchain)
+                    if isinstance(num_of_block_after_tran_in_fork_1, int):
+                        num_of_blocks_in_fork.append(num_of_block_after_tran_in_fork_1)
+                    if isinstance(num_of_block_after_tran_in_fork_2, int):
+                        num_of_blocks_in_fork.append(num_of_block_after_tran_in_fork_2)
 
         current_time += time_interval
+        current_transactions = []
 
         if (not GC.RANDOM_WINNERS or not GC.RANDOM_TRANS) and current_period_end_time < current_time:
             current_period_end_time += 10000
 
         for node in nodes_list:
             node.update_next_connect_time(current_time)
-        # print(current_time)
 
     blockchain_list, blockchain_owner = FileWritting.write_node_blockchain_into_file(nodes_list)
-    FileWritting.write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list)
-    FileWritting.write_csv_statistics_file(blockchain_list)
+    FileWritting.write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list,
+                                            num_of_blocks_in_fork)
+    FileWritting.write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork)
 
     # app_tran = 0
     #for node in nodes_list:
@@ -194,11 +201,17 @@ def main(argv):
 
     try:
         file_suffix = ""
-        opts, args = getopt.getopt(argv, "c:t:", ["CONTACT_FREQ=", "TRANS_RATE=", "RANDOM_TRANS=",
-                                                        "RANDOM_WINNERS=", "RANDOM_CONNECT=", "RANDOM_START_CONNECT="])
+        opts, args = getopt.getopt(argv, "n:w:c:t:", ["NUM_OF_NODE=", "NUM_OF_WINNERS=", "CONTACT_FREQ=", "TRANS_RATE=", "RANDOM_TRANS=",
+                                                      "RANDOM_WINNERS=", "RANDOM_CONNECT=", "RANDOM_START_CONNECT="])
 
         for opt, arg in opts:
-            if opt in ("-c", "--CONTACT_FREQ"):
+            if opt in ("-n", "--NUM_OF_NODE"):
+                GC.NUM_OF_NODES = int(arg)
+                file_suffix += "_node"+arg
+            elif opt in ("-w", "--NUM_OF_WINNERS"):
+                GC.NUM_OF_WINNERS = int(arg)
+                file_suffix += "_winners" + arg
+            elif opt in ("-c", "--CONTACT_FREQ"):
                 GC.CONTACT_FREQ = int(arg)
                 file_suffix += "_"+arg
             elif opt in ("-t", "--TRANS_RATE"):

@@ -1,4 +1,0 @@
-call autorun_all_false_large_contact_freq.bat
-call autorun_RC_large_contact_freq.bat
-call autorun_RSC_large_contact_freq.bat
-call autorun_RC_RSC_large_contact_freq.bat

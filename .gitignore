@@ -69,3 +69,7 @@ fabric.properties
 .idea/*.xml
 .idea/*.iml
 venv/
+
+#Logs and statistics
+Log/
+Stats/

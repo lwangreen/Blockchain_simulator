@@ -77,8 +77,10 @@ class NodeBlockchain:
             self.mempool = transaction
 
     def resolve_conflict(self, other_node):
+        index = None
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
-
+            index = self.find_last_block_with_trans()
+            index = len(self.chain) - 1 - index
             self.chain = other_node.chain.copy()
 
             self.create_unsolved_block(self.hash(self.chain[-1]))
@@ -99,10 +101,18 @@ class NodeBlockchain:
                     if transaction in self.mempool:
                         self.mempool.remove(transaction)
 
+        return index
+
     def broadcast_transactions(self, other_node):
         if other_node.mempool:
             for transaction in other_node.mempool:
                 if transaction not in self.mempool and transaction not in self.approved_transactions:
                     self.add_new_transaction(transaction)
 
-
+    def find_last_block_with_trans(self):
+        index = len(self.chain)-1
+        while index > 0:
+            if self.chain[index]['transactions']:
+                break
+            index -= 1
+        return index

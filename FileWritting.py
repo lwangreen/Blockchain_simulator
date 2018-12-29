@@ -77,7 +77,7 @@ def write_node_blockchain_into_file(nodes_list):
     return blockchain_list, blockchain_owner
 
 
-def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list):
+def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list, num_of_blocks_in_fork):
     import BlockchainSimulator as BS
 
     filename2 = GC.OUTPUT_FILE
@@ -93,7 +93,14 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
     f2.write("Summary: \n")
     f2.write("Contact frequency: "+ str(GC.CONTACT_FREQ)+", "+str(GC.CONTACT_FREQ+600)+"\n")
     f2.write("Transaction generation rate: " + str(GC.TRANS_RATE)+"\n")
+    f2.write("Maximum of number of empty blocks after the lastest transaction block in fork: "
+             + str(max(num_of_blocks_in_fork)) + "\n")
+    f2.write("Minumum of number of empty blocks after the lastest transaction block in fork: "
+             + str(min(num_of_blocks_in_fork)) + "\n")
+    f2.write("Minumum of number of empty blocks after the lastest transaction block in fork: "
+             + str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + "\n")
     f2.write("Number of Blockchain: "+str(len(blockchain_list))+"\n")
+
     count = 0
 
     for blockchain in blockchain_list:
@@ -130,7 +137,7 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
     f2.close()
 
 
-def write_csv_statistics_file(blockchain_list):
+def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork):
     import BlockchainSimulator as BS
 
     last_block_timestamp = 0
@@ -163,6 +170,8 @@ def write_csv_statistics_file(blockchain_list):
     if different_block_index == 0:
         different_block_index = "None"
 
+    filename_suffix += "_node"+str(GC.NUM_OF_NODES)
+    filename_suffix += "_winners"+str(GC.NUM_OF_WINNERS)
     if GC.RANDOM_TRANS:
         filename_suffix += "_RT"
     if GC.RANDOM_WINNERS:
@@ -183,10 +192,12 @@ def write_csv_statistics_file(blockchain_list):
         f = open(os.getcwd()+"\\Stats\\"+stat_file, 'w+')
         f.write("Contact time interval, Lastest block timestamp with transactions, Convergence speed, "
                 "Number of blockchain, Length of the longest blockchain, Block index with forks occurred, "
-                "The last block contains transactions"+"\n")
+                "The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks"+"\n")
         f.close()
     f = open(os.getcwd()+"\\Stats\\"+stat_file, 'a')
     f.write(str(GC.CONTACT_FREQ) + "-"+str(GC.CONTACT_FREQ+600) + ", "+str(last_block_timestamp_with_trans) + ", " +
             str(last_block_timestamp) + ", "+str(len(blockchain_list)) + ", " + str(length_longest_blockchain) + ", " +
-            str(different_block_index) + ", " + str(last_block_index_with_trans) + "\n")
+            str(different_block_index) + ", " + str(last_block_index_with_trans) + ", " +
+            str(max(num_of_blocks_in_fork)) + ", " + str(min(num_of_blocks_in_fork)) + ", " +
+            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + "\n")
     f.close()

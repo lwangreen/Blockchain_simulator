@@ -1,14 +1,14 @@
-python BlockchainSimulator.py -c 0 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 600 -t 1  --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 1200 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 1800 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 2400 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 3000 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 3600 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 4200 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 4800 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 5400 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 6000 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 6600 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 7200 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
-python BlockchainSimulator.py -c 7800 -t 1 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 0 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 600 -t 20  --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 1200 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 1800 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 2400 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 3000 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 3600 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 4200 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 4800 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 5400 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 6000 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 6600 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 7200 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
+python BlockchainSimulator.py -n %~1 -w %~2 -c 7800 -t 20 --RANDOM_TRANS True --RANDOM_WINNERS True --RANDOM_CONNECT True --RANDOM_START_CONNECT True
