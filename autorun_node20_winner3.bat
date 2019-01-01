@@ -1,4 +1,0 @@
-call autorun_node20_winner3_all_false.bat
-call autorun_node20_winner3_RC.bat
-call autorun_node20_winner3_RSC.bat
-call autorun_node20_winner3_RC_RSC.bat
