@@ -14,7 +14,7 @@ def generate_record_string(record_list, contact_freq):
     return str_record
 
 
-stats_files = os.listdir(os.getcwd()+"//Stats")
+stats_files = os.listdir(os.getcwd()+"\\averaged_stats")
 summarised_stats_files = ["latest_block_timestamp.csv", "convergence_speed.csv", "num_of_blockchain.csv",
                           "length_of_blockchain.csv", "block_index_with_transaction.csv",
                           "max_num_of_block.csv", "avg_num_of_block.csv"]
@@ -33,7 +33,7 @@ max_num_of_block = []
 avg_num_of_block = []
 
 for f in stats_files:
-    opened_file = open(os.getcwd()+"\\Stats\\"+f, 'r')
+    opened_file = open(os.getcwd()+"\\averaged_stats\\"+f, 'r')
     opened_file.readline()
     opened_files.append(opened_file)
 
@@ -70,7 +70,7 @@ for f in opened_files:
     avg_num_of_block.append(temp_avg_num_of_block)
 
 for f in summarised_stats_files:
-    opened_summary_files.append(open(os.getcwd()+"\\Stats\\"+f, 'w+'))
+    opened_summary_files.append(open(os.getcwd()+"\\averaged_stats\\"+f, 'w+'))
 
 index = 0
 str_keyword = "contact freq, "
