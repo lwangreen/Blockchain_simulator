@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 def generate_record_string(record_list, contact_freq):
     str_record = ""
@@ -14,7 +15,8 @@ def generate_record_string(record_list, contact_freq):
     return str_record
 
 
-stats_files = os.listdir(os.getcwd()+"\\averaged_stats")
+stats_files = os.listdir(os.getcwd() + "\\averaged_stats")
+plot_directory = os.getcwd() + "\\" + datetime.now().strftime('%Y-%m-%d %H-%M-%S')+"_plot_stats\\"
 summarised_stats_files = ["latest_block_timestamp.csv", "convergence_speed.csv", "num_of_blockchain.csv",
                           "length_of_blockchain.csv", "block_index_with_transaction.csv",
                           "max_num_of_block.csv", "avg_num_of_block.csv"]
@@ -32,6 +34,8 @@ block_index_with_transaction = []
 max_num_of_block = []
 avg_num_of_block = []
 
+if not os.path.exists(plot_directory):
+    os.makedirs(plot_directory)
 for f in stats_files:
     opened_file = open(os.getcwd()+"\\averaged_stats\\"+f, 'r')
     opened_file.readline()
@@ -70,7 +74,7 @@ for f in opened_files:
     avg_num_of_block.append(temp_avg_num_of_block)
 
 for f in summarised_stats_files:
-    opened_summary_files.append(open(os.getcwd()+"\\averaged_stats\\"+f, 'w+'))
+    opened_summary_files.append(open(plot_directory+f, 'w+'))
 
 index = 0
 str_keyword = "contact freq, "
