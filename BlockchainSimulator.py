@@ -103,6 +103,24 @@ def is_only_one_blockchain_left(nodes_list):
     return True
 
 
+def cal_converge_progress(nodes_list):
+    trans_count = 0
+    block_index = 0
+    block = None
+    running = True
+    progress_time = 0
+    while running:
+        block = nodes_list[0].blockchain.chain[block_index]
+        for node in nodes_list:
+            if node.blockchain.chain[block_index] != block:
+                running = False
+                break
+        if running:
+            trans_count += len(nodes_list[0].blockchain.chain[block_index]['transactions'])
+            progress_time = nodes_list[0].blockchain.chain[block_index]['time']
+    return trans_count/30, progress_time
+
+
 def running():
 
     current_time = 0
@@ -111,6 +129,8 @@ def running():
     nodes_list = []
     entire_transaction_list = []
     num_of_blocks_in_fork = []
+    converge_progress = {}
+
     min_cfreq_range, max_cfreq_range = cal_contact_frequency_range(GC.CONTACT_FREQ, time_interval)
     if not GC.RANDOM_TRANS:
         current_period_end_time = 10000
@@ -174,6 +194,10 @@ def running():
                     if isinstance(num_of_block_after_tran_in_fork_2, int):
                         num_of_blocks_in_fork.append(num_of_block_after_tran_in_fork_2)
 
+        progress, converge_time = cal_converge_progress(nodes_list)
+        progress -= progress%10
+        if progress not in converge_progress.keys() and progress % 20 == 0:
+            converge_progress[progress] = converge_time
         current_time += time_interval
         current_transactions = []
 
@@ -186,7 +210,7 @@ def running():
     blockchain_list, blockchain_owner = FileWritting.write_node_blockchain_into_file(nodes_list)
     FileWritting.write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list,
                                             num_of_blocks_in_fork)
-    FileWritting.write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork)
+    FileWritting.write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, converge_progress)
 
     # app_tran = 0
     #for node in nodes_list:

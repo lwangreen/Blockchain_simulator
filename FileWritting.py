@@ -137,7 +137,7 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
     f2.close()
 
 
-def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork):
+def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, converge_progress):
     import BlockchainSimulator as BS
 
     last_block_timestamp = 0
@@ -192,12 +192,15 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork):
         f = open(os.getcwd()+"\\Stats\\"+stat_file, 'w+')
         f.write("Contact time interval, Lastest block timestamp with transactions, Convergence speed, "
                 "Number of blockchain, Length of the longest blockchain, Block index with forks occurred, "
-                "The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks"+"\n")
+                "The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks, "
+                "Converge 20%, Converge 40%, Converge 60%, Converge 80%, Converge 100%"+"\n")
         f.close()
     f = open(os.getcwd()+"\\Stats\\"+stat_file, 'a')
     f.write(str(GC.CONTACT_FREQ) + "-"+str(GC.CONTACT_FREQ+600) + ", "+str(last_block_timestamp_with_trans) + ", " +
             str(last_block_timestamp) + ", "+str(len(blockchain_list)) + ", " + str(length_longest_blockchain) + ", " +
             str(different_block_index) + ", " + str(last_block_index_with_trans) + ", " +
             str(max(num_of_blocks_in_fork)) + ", " + str(min(num_of_blocks_in_fork)) + ", " +
-            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + "\n")
+            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + ", "+ str(converge_progress[20])+", "+
+            str(converge_progress[40])+", "+ str(converge_progress[60])+", " + str(converge_progress[80])+", "+
+            str(converge_progress[100])+"\n")
     f.close()
