@@ -196,11 +196,18 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, converge_p
                 "Converge 20%, Converge 40%, Converge 60%, Converge 80%, Converge 100%"+"\n")
         f.close()
     f = open(os.getcwd()+"\\Stats\\"+stat_file, 'a')
+
+    converge_progress_string = ""
+
+    for i in range(20, 101, 20):
+        if i in converge_progress.keys():
+            converge_progress_string += str(converge_progress[i])+", "
+        else:
+            converge_progress_string += "None, "
+    converge_progress_string = converge_progress_string[:-2]
     f.write(str(GC.CONTACT_FREQ) + "-"+str(GC.CONTACT_FREQ+600) + ", "+str(last_block_timestamp_with_trans) + ", " +
             str(last_block_timestamp) + ", "+str(len(blockchain_list)) + ", " + str(length_longest_blockchain) + ", " +
             str(different_block_index) + ", " + str(last_block_index_with_trans) + ", " +
             str(max(num_of_blocks_in_fork)) + ", " + str(min(num_of_blocks_in_fork)) + ", " +
-            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + ", "+ str(converge_progress[20])+", "+
-            str(converge_progress[40])+", "+ str(converge_progress[60])+", " + str(converge_progress[80])+", "+
-            str(converge_progress[100])+"\n")
+            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + ", "+ converge_progress_string + "\n")
     f.close()

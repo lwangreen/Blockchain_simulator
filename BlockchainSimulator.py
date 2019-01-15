@@ -107,18 +107,19 @@ def cal_converge_progress(nodes_list):
     trans_count = 0
     block_index = 0
     block = None
-    running = True
-    progress_time = 0
-    while running:
+    converged = True
+    while block_index < len(nodes_list[0].blockchain.chain):
         block = nodes_list[0].blockchain.chain[block_index]
         for node in nodes_list:
-            if node.blockchain.chain[block_index] != block:
-                running = False
+            if len(node.blockchain.chain) <= block_index or node.blockchain.chain[block_index] != block:
+                converged = False
                 break
-        if running:
+        if converged:
             trans_count += len(nodes_list[0].blockchain.chain[block_index]['transactions'])
-            progress_time = nodes_list[0].blockchain.chain[block_index]['time']
-    return trans_count/30, progress_time
+        else:
+            break
+        block_index += 1
+    return trans_count/30
 
 
 def running():
@@ -194,10 +195,12 @@ def running():
                     if isinstance(num_of_block_after_tran_in_fork_2, int):
                         num_of_blocks_in_fork.append(num_of_block_after_tran_in_fork_2)
 
-        progress, converge_time = cal_converge_progress(nodes_list)
-        progress -= progress%10
+        progress = cal_converge_progress(nodes_list)
+        progress -= progress % 10
+        progress = int(progress)
         if progress not in converge_progress.keys() and progress % 20 == 0:
-            converge_progress[progress] = converge_time
+            converge_progress[progress] = current_time
+            print(converge_progress) 
         current_time += time_interval
         current_transactions = []
 
