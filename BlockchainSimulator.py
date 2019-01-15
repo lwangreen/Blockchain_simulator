@@ -201,8 +201,9 @@ def main(argv):
 
     try:
         file_suffix = ""
-        opts, args = getopt.getopt(argv, "n:w:c:t:", ["NUM_OF_NODE=", "NUM_OF_WINNERS=", "CONTACT_FREQ=", "TRANS_RATE=", "RANDOM_TRANS=",
-                                                      "RANDOM_WINNERS=", "RANDOM_CONNECT=", "RANDOM_START_CONNECT="])
+        opts, args = getopt.getopt(argv, "n:w:c:t:", ["NUM_OF_NODE=", "NUM_OF_WINNERS=", "CONTACT_FREQ=", "TRANS_RATE=",
+                                                      "RANDOM_TRANS=","RANDOM_WINNERS=", "RANDOM_CONNECT=",
+                                                      "RANDOM_START_CONNECT=", "HETERO_RSC=", "HETERO_RC="])
 
         for opt, arg in opts:
             if opt in ("-n", "--NUM_OF_NODE"):
@@ -233,6 +234,14 @@ def main(argv):
                 GC.RANDOM_START_CONNECT_TIME = eval(arg)
                 if GC.RANDOM_START_CONNECT_TIME:
                     file_suffix += "_RSC"
+            elif opt in ("--HETERO_RSC"):
+                GC.HETERO_RSC = eval(arg)
+                if GC.HETERO_RSC:
+                    file_suffix += "_HRSC"
+            elif opt in ("--HETERO_RC"):
+                GC.HETERO_RC = eval(arg)
+                if GC.HETERO_RC:
+                    file_suffix += "_HRC"
 
         GC.OUTPUT_FILE = datetime.now().strftime('%Y-%m-%d %H-%M-%S')+file_suffix+".txt"
         running()
