@@ -209,5 +209,5 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, converge_p
             str(last_block_timestamp) + ", "+str(len(blockchain_list)) + ", " + str(length_longest_blockchain) + ", " +
             str(different_block_index) + ", " + str(last_block_index_with_trans) + ", " +
             str(max(num_of_blocks_in_fork)) + ", " + str(min(num_of_blocks_in_fork)) + ", " +
-            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + ", "+ converge_progress_string + "\n")
+            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + ", " + converge_progress_string + "\n")
     f.close()

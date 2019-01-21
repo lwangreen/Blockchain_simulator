@@ -77,22 +77,21 @@ class NodeBlockchain:
             self.mempool = transaction
 
     def resolve_conflict(self, other_node):
-        index = None
+        num_of_blocks_after_removed_transactions = []
         if len(other_node.chain) > len(self.chain):  # and self.valid_chain(other_node.chain):
-            index = self.find_last_block_with_trans()
-            index = len(self.chain) - 1 - index
-            self.chain = other_node.chain.copy()
-
-            self.create_unsolved_block(self.hash(self.chain[-1]))
-
             # If the transactions are approved but not in current longest chain:
             # Remove it from approved transaction list and add it back to incomplete transaction again, and wait for
             # next block generation
-            for transaction in self.approved_transactions:
-                if transaction not in other_node.approved_transactions:
-                    self.mempool = transaction
-                    self.approved_transactions.remove(transaction)
+            for block_index in range(len(self.chain)):
+                for transaction in self.chain[block_index]['transactions']:
+                    if transaction not in other_node.approved_transactions:
+                        self.mempool = transaction
+                        self.approved_transactions.remove(transaction)
+                        num_of_blocks_after_removed_transactions.append(len(self.chain) - 1 - block_index)
 
+            self.chain = other_node.chain.copy()
+
+            self.create_unsolved_block(self.hash(self.chain[-1]))
             # If the transactions in the longest chain are not in self approved transaction list
             for block in self.chain:
                 for transaction in block['transactions']:
@@ -101,7 +100,7 @@ class NodeBlockchain:
                     if transaction in self.mempool:
                         self.mempool.remove(transaction)
 
-        return index
+        return num_of_blocks_after_removed_transactions
 
     def broadcast_transactions(self, other_node):
         if other_node.mempool:

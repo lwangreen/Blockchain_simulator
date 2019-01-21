@@ -190,10 +190,11 @@ def running():
                     node2.blockchain.broadcast_transactions(node1.blockchain)
                     num_of_block_after_tran_in_fork_1 = node1.blockchain.resolve_conflict(node2.blockchain)
                     num_of_block_after_tran_in_fork_2 = node2.blockchain.resolve_conflict(node1.blockchain)
-                    if isinstance(num_of_block_after_tran_in_fork_1, int):
-                        num_of_blocks_in_fork.append(num_of_block_after_tran_in_fork_1)
-                    if isinstance(num_of_block_after_tran_in_fork_2, int):
-                        num_of_blocks_in_fork.append(num_of_block_after_tran_in_fork_2)
+
+                    for i in num_of_block_after_tran_in_fork_1:
+                        num_of_blocks_in_fork.append(i)
+                    for i in num_of_block_after_tran_in_fork_2:
+                        num_of_blocks_in_fork.append(i)
 
         progress = cal_converge_progress(nodes_list)
         progress -= progress % 10
