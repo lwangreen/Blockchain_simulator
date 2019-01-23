@@ -201,7 +201,6 @@ def running():
         progress = int(progress)
         if progress not in converge_progress.keys() and progress % 20 == 0:
             converge_progress[progress] = current_time
-            print(converge_progress) 
         current_time += time_interval
         current_transactions = []
 
