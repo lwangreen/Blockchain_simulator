@@ -34,7 +34,7 @@ def write_blocks_into_file(f, blocks):
     f.write("\n")
 
 
-def write_node_blockchain_into_file(nodes_list):
+def get_statistics(nodes_list):
     """
     Write final blockchain information of all nodes into a file
     :param filename: the name of the file that blockchain information is stored into
@@ -45,14 +45,6 @@ def write_node_blockchain_into_file(nodes_list):
     blockchain_list = []
     blockchain_owner = []
     longest_blockchain = []
-    #filename1 = "Nodes_blockchain.txt"
-
-    file_path = os.getcwd()+"\\Log\\"
-
-    if not os.path.exists(file_path):
-        os.makedirs(file_path)
-
-    #f = open(file_path+filename1, 'w+')
 
     for node in nodes_list:
         if node.blockchain.chain not in blockchain_list:
@@ -63,25 +55,18 @@ def write_node_blockchain_into_file(nodes_list):
             blockchain_owner.append([])
         blockchain_owner[blockchain_list.index(node.blockchain.chain)].append(node.id)
 
-        #f.write("Node ID:"+str(node.id)+"\n")
-
-        #f.write("-------------Incomplete transaction----------------:" + "\n")
-        #write_transactions_into_file(f, node.blockchain.mempool)
-        #for block in node.blockchain.chain[-6:]:
-        #    write_transactions_into_file(f, block['transactions'])
-        #f.write("\n")
-
-        #write_blocks_into_file(f, node.blockchain.chain)
-
-    #f.close()
     return blockchain_list, blockchain_owner
 
 
 def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list, num_of_blocks_in_fork):
     import BlockchainSimulator as BS
 
+    file_path = os.getcwd()+"\\Log\\"
+
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)
     filename2 = GC.OUTPUT_FILE
-    file_path = os.getcwd() + "\\Log\\"
+
     f2 = open(file_path+filename2, 'w+')
     origin_size_entire_transactions = len(entire_transaction_list)
     f2.write("Parameters:\n")
@@ -137,7 +122,7 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
     f2.close()
 
 
-def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, converge_progress):
+def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_of_blocks_in_fork):
     import BlockchainSimulator as BS
 
     last_block_timestamp = 0
@@ -192,22 +177,30 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, converge_p
         f = open(os.getcwd()+"\\Stats\\"+stat_file, 'w+')
         f.write("Contact time interval, Lastest block timestamp with transactions, Convergence speed, "
                 "Number of blockchain, Length of the longest blockchain, Block index with forks occurred, "
-                "The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks, "
-                "Converge 20%, Converge 40%, Converge 60%, Converge 80%, Converge 100%"+"\n")
+                "The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks"
+                #"Converge 20%, Converge 40%, Converge 60%, Converge 80%, Converge 100%"
+                +"\n")
         f.close()
     f = open(os.getcwd()+"\\Stats\\"+stat_file, 'a')
 
-    converge_progress_string = ""
+    #converge_progress_string = ""
 
-    for i in range(20, 101, 20):
-        if i in converge_progress.keys():
-            converge_progress_string += str(converge_progress[i])+", "
-        else:
-            converge_progress_string += "None, "
-    converge_progress_string = converge_progress_string[:-2]
+    #for i in range(20, 101, 20):
+    #    if i in converge_progress.keys():
+    #        converge_progress_string += str(converge_progress[i])+", "
+    #    else:
+    #        converge_progress_string += "None, "
+    #converge_progress_string = converge_progress_string[:-2]
+    occurance_num_of_blocks_string = ""
+    sorted_keys = list(dict_num_of_blocks_in_fork.keys())
+    sorted_keys.sort()
+    for i in sorted_keys:
+        occurance_num_of_blocks_string += str(i)+": "+str(dict_num_of_blocks_in_fork[i]) + ", "
+    occurance_num_of_blocks_string = occurance_num_of_blocks_string[:-2]
     f.write(str(GC.CONTACT_FREQ) + "-"+str(GC.CONTACT_FREQ+600) + ", "+str(last_block_timestamp_with_trans) + ", " +
             str(last_block_timestamp) + ", "+str(len(blockchain_list)) + ", " + str(length_longest_blockchain) + ", " +
             str(different_block_index) + ", " + str(last_block_index_with_trans) + ", " +
             str(max(num_of_blocks_in_fork)) + ", " + str(min(num_of_blocks_in_fork)) + ", " +
-            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + ", " + converge_progress_string + "\n")
+            str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + #", " + converge_progress_string
+            ", "+ occurance_num_of_blocks_string + "\n")
     f.close()

@@ -122,6 +122,17 @@ def cal_converge_progress(nodes_list):
     return trans_count/30
 
 
+def stats_of_num_of_blocks_after_revoked_transactions(num_of_block_after_tran_in_fork, num_of_blocks_in_fork,
+                                                      dict_num_of_blocks_in_fork):
+    for i in num_of_block_after_tran_in_fork:
+        num_of_blocks_in_fork.append(i)
+        if i in dict_num_of_blocks_in_fork.keys():
+            dict_num_of_blocks_in_fork[i] += 1
+        else:
+            dict_num_of_blocks_in_fork[i] = 1
+    return num_of_blocks_in_fork, dict_num_of_blocks_in_fork
+
+
 def running():
 
     current_time = 0
@@ -130,6 +141,7 @@ def running():
     nodes_list = []
     entire_transaction_list = []
     num_of_blocks_in_fork = []
+    dict_num_of_blocks_in_fork = {}
     converge_progress = {}
 
     min_cfreq_range, max_cfreq_range = cal_contact_frequency_range(GC.CONTACT_FREQ, time_interval)
@@ -191,10 +203,14 @@ def running():
                     num_of_block_after_tran_in_fork_1 = node1.blockchain.resolve_conflict(node2.blockchain)
                     num_of_block_after_tran_in_fork_2 = node2.blockchain.resolve_conflict(node1.blockchain)
 
-                    for i in num_of_block_after_tran_in_fork_1:
-                        num_of_blocks_in_fork.append(i)
-                    for i in num_of_block_after_tran_in_fork_2:
-                        num_of_blocks_in_fork.append(i)
+                    num_of_blocks_in_fork, dict_num_of_blocks_in_fork = \
+                        stats_of_num_of_blocks_after_revoked_transactions(num_of_block_after_tran_in_fork_1,
+                                                                          num_of_blocks_in_fork,
+                                                                          dict_num_of_blocks_in_fork)
+                    num_of_blocks_in_fork, dict_num_of_blocks_in_fork = \
+                        stats_of_num_of_blocks_after_revoked_transactions(num_of_block_after_tran_in_fork_2,
+                                                                          num_of_blocks_in_fork,
+                                                                          dict_num_of_blocks_in_fork)
 
         progress = cal_converge_progress(nodes_list)
         progress -= progress % 10
@@ -210,17 +226,10 @@ def running():
         for node in nodes_list:
             node.update_next_connect_time(current_time)
 
-    blockchain_list, blockchain_owner = FileWritting.write_node_blockchain_into_file(nodes_list)
-    FileWritting.write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list,
-                                            num_of_blocks_in_fork)
-    FileWritting.write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, converge_progress)
-
-    # app_tran = 0
-    #for node in nodes_list:
-        #print("Node: "+str(node.id))
-        #print(node.blockchain.mempool)
-        # app_tran += len(node.blockchain.approved_transactions)
-    # print(app_tran)
+    blockchain_list, blockchain_owner = FileWritting.get_statistics(nodes_list)
+    # FileWritting.write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list,
+                                            # num_of_blocks_in_fork)
+    FileWritting.write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_of_blocks_in_fork)
     print("FINISH")
 
 
