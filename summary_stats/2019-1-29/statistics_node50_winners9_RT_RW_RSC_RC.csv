@@ -1,5 +1,4 @@
 Contact time interval, Lastest block timestamp with transactions, Convergence speed, Number of blockchain, Length of the longest blockchain, Block index with forks occurred, The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks
-0-600, 90122, 91670, 2, 184, 182, 181, 1, 0, 0.030303030303030304, 0: 288, 1: 9
 0-600, 90669, 91466, 3, 174, 173, 172, 1, 0, 0.012903225806451613, 0: 306, 1: 4
 600-1200, 90629, 91400, 2, 142, 141, 140, 3, 0, 0.17484215638659542, 0: 1876, 1: 38, 2: 113, 3: 32
 1200-1800, 93717, 96715, 14, 99, 96, 94, 3, 0, 0.31468789151742943, 0: 9747, 1: 3382, 2: 432, 3: 8
