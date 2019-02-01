@@ -6,8 +6,8 @@ import os
 
 def set_text_font(xlabels):
     plot.set_xticklabels(xlabels)
-    plt.xticks(fontsize=6, rotation=40)
-    plt.yticks(fontsize=6)
+    plt.xticks(fontsize=10, rotation=40)
+    plt.yticks(fontsize=10)
     #plt.legend(legend, fontsize=8, loc='upper left')
 
 
@@ -21,6 +21,10 @@ data = []
 
 stats_directories = os.listdir(INPUT_DIRECTORY)
 stats_files = os.listdir(INPUT_DIRECTORY + "\\" + stats_directories[0])
+
+if not os.path.exists(OUTPUT_DIRECTORY):
+    os.makedirs(OUTPUT_DIRECTORY)
+
 
 for file_num in range(0, len(stats_files)):
     data.append([])
@@ -60,7 +64,7 @@ for file_num in range(0, len(stats_files)):
         if not DATA_FILLED:
             DATA_FILLED = True
 
-
+fig_count = 0
 for index in range(len(summarised_stats_files)):
     attribute_data = []
     for file_num in range(len(data)):
@@ -68,15 +72,16 @@ for index in range(len(summarised_stats_files)):
         for contact_freq in range(len(x)):
             attribute_data[file_num].append(data[file_num][contact_freq][index])
 
-    for num in range(0, 3):
-        fig = plt.figure(num, figsize=(6, 3))
+    for file_num in range(0, len(stats_files)):
+        fig = plt.figure(fig_count+file_num, figsize=(10, 6))
         plot = fig.add_subplot(111)
-        #for num2 in range(num, len(stats_files), 3):
-        classified_data = attribute_data[0]
+        # for num2 in range(num, len(stats_files), 3):
+        #       classified_data = attribute_data[num2]
+        #       bp = plot.boxplot(classified_data)
+        classified_data = attribute_data[file_num]
         bp = plot.boxplot(classified_data)
         set_text_font(x)
-        plt.show()
-        break
-    break
-
-print(len(attribute_data))
+        plt.title(summarised_stats_files[index]+stats_files[file_num][10:-17])
+        fig.savefig(OUTPUT_DIRECTORY+"\\"+summarised_stats_files[index]+stats_files[file_num][10:-17]+".pdf", bbox_inches='tight')
+        plt.close(fig)
+    fig_count += len(stats_files)
