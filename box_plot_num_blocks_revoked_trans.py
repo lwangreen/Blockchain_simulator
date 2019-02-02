@@ -35,11 +35,11 @@ if not os.path.exists(OUTPUT_DIRECTORY):
 fig_count = 0
 x = []
 
+dict_a = {}
+for i in range(0, 10):
+    dict_a[i] = []
 
 for file_num in range(0, len(stats_files)):
-    dict_a = {}
-    for i in range(0, 10):
-        dict_a[i] = []
 
     for directory_num in range(correct_file_index, len(stats_directories)):
         num_line = 0
@@ -61,28 +61,42 @@ for file_num in range(0, len(stats_files)):
             for item in line:
                 key, value = convert_str_to_dict(item)
                 if key < 10:
-                    dict_a[key][num_line][directory_num - correct_file_index] = value
+                    dict_a[key][num_line][-1] = value
                 else:
                     break
             line = f.readline()
             num_line += 1
     #
-    legend = []
+    # Box plot for all parameters
+    # legend = []
+    # keys = list(dict_a.keys())
+    # keys.sort()
+    # for key in keys:
+    #     # box plot
+    #     fig_box_plot = plt.figure(fig_count, figsize=(10, 6))
+    #     plot = fig_box_plot.add_subplot(111)
+    #     print(key, dict_a[key])
+    #     bp = plot.boxplot(dict_a[key])
+    #     legend.append("number of blocks " + str(key))
+    #     set_text_font(x)
+    #     fig_box_plot.savefig(OUTPUT_DIRECTORY + "\\number_of_blocks_" + str(key) + ".pdf", bbox_inches='tight')
+    #     plt.close(fig_box_plot)
+    #     fig_count += 1
+legend = []
+keys = list(dict_a.keys())
+keys.sort()
 
-    keys = list(dict_a.keys())
-    keys.sort()
-
-    for key in keys:
-        # box plot
-        fig_box_plot = plt.figure(fig_count, figsize=(10, 6))
-        plot = fig_box_plot.add_subplot(111)
-        print(key, dict_a[key])
-        bp = plot.boxplot(dict_a[key])
-        legend.append("number of blocks "+str(key))
-        set_text_font(x)
-        fig_box_plot.savefig(OUTPUT_DIRECTORY+"\\number_of_blocks_"+str(key)+stats_files[file_num][10:-17]+".pdf", bbox_inches='tight')
-        plt.close(fig_box_plot)
-        fig_count += 1
+for key in keys:
+    # box plot
+    fig_box_plot = plt.figure(fig_count, figsize=(10, 6))
+    plot = fig_box_plot.add_subplot(111)
+    print(key, dict_a[key])
+    bp = plot.boxplot(dict_a[key])
+    legend.append("number of blocks "+str(key))
+    set_text_font(x)
+    fig_box_plot.savefig(OUTPUT_DIRECTORY+"\\number_of_blocks_"+str(key)+".pdf", bbox_inches='tight')
+    plt.close(fig_box_plot)
+    fig_count += 1
 
     # line chart plot
     # fig_line_chart = plt.figure(fig_count, figsize=(21, 9))
