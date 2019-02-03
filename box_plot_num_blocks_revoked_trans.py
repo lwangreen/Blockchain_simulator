@@ -4,11 +4,12 @@ import os
 from datetime import datetime
 
 
-def set_text_font(xlabels):
+def set_text_font(xlabels, legend = None):
     plot.set_xticklabels(xlabels)
     plt.xticks(fontsize=10, rotation=40)
     plt.yticks(fontsize=10)
-    plt.legend(legend, fontsize=8, loc='upper left')
+    if legend:
+        plt.legend(legend, fontsize=8, loc='upper left')
 
 
 def convert_str_to_date(string):
@@ -36,10 +37,12 @@ fig_count = 0
 x = []
 
 dict_a = {}
-for i in range(0, 10):
-    dict_a[i] = []
+##for i in range(0, 10):
+##    dict_a[i] = []
 
 for file_num in range(0, len(stats_files)):
+
+
     for directory_num in range(correct_file_index, len(stats_directories)):
         num_line = 0
         f = open(INPUT_DIRECTORY + "\\" + stats_directories[directory_num] + "\\" + stats_files[file_num], 'r')
@@ -67,21 +70,27 @@ for file_num in range(0, len(stats_files)):
             num_line += 1
     
     # Box plot for all parameters of number of blocks for revoked transaction
-##    legend = []
-##    keys = list(dict_a.keys())
-##    keys.sort()
-##    for key in keys:
-##        # box plot
-##        fig_box_plot = plt.figure(fig_count, figsize=(10, 6))
-##        plot = fig_box_plot.add_subplot(111)
-##        # print(key, dict_a[key])
-##        bp = plot.boxplot(dict_a[key])
-##        legend.append("number of blocks " + str(key))
-##        set_text_font(x)
-##        fig_box_plot.savefig(OUTPUT_DIRECTORY + "\\number_of_blocks_" + str(key) + stats_files[file_num][10:-17] + ".pdf", bbox_inches='tight')
-##        plt.close(fig_box_plot)
-##        fig_count += 1
+    
+    keys = list(dict_a.keys())
+    keys.sort()
+    for key in keys:
+        # box plot
+        print(key)
+        print(dict_a[key], len(dict_a[key][0]))
+        legend = []
+        fig_box_plot = plt.figure(fig_count, figsize=(10, 6))
+        plot = fig_box_plot.add_subplot(111)
+        # print(key, dict_a[key])
+        bp = plot.boxplot(dict_a[key])
+        legend.append("number of blocks " + str(key)+ stats_files[file_num][10:-17])
+        set_text_font(x, legend=legend)
+        fig_box_plot.savefig(OUTPUT_DIRECTORY + "\\number_of_blocks_" + str(key) + stats_files[file_num][10:-17] + ".pdf", bbox_inches='tight')
+        plt.close(fig_box_plot)
+        fig_count += 1
+    for i in range(0, 10):
+        dict_a[i] = []
 
+##  Linechart   
 ##    legend = []
 ##    keys = list(dict_a.keys())
 ##    keys.sort()
@@ -95,9 +104,9 @@ for file_num in range(0, len(stats_files)):
 ##            line_data.append(np.mean(data_contact_freq))
 ##        legend.append("number of blocks: "+ str(key))
 ##        plt.plot(x, line_data)
-##        set_text_font(x)
+##        set_text_font(x, legend=legend)
 ##
-##    fig_line_chart.savefig(OUTPUT_DIRECTORY+"\\linechart_number_of_blocks_"+str(key)+stats_files[file_num][10:-17]+".pdf", bbox_inches='tight')
+##    fig_line_chart.savefig(OUTPUT_DIRECTORY+"\\linechart_number_of_blocks"+stats_files[file_num][10:-17]+".pdf", bbox_inches='tight')
 ##    plt.close(fig_line_chart)
 ##    fig_count += 1
 
@@ -105,21 +114,23 @@ for file_num in range(0, len(stats_files)):
 
 
 # Box plot for grouped number of blocks after revoked transactions
-legend = []
-keys = list(dict_a.keys())
-keys.sort()
 
-for key in keys:
-    # box plot
-    fig_box_plot = plt.figure(fig_count, figsize=(10, 6))
-    plot = fig_box_plot.add_subplot(111)
-    # print(key, dict_a[key])
-    bp = plot.boxplot(dict_a[key])
-    legend.append("number of blocks "+str(key))
-    set_text_font(x)
-    fig_box_plot.savefig(OUTPUT_DIRECTORY+"\\number_of_blocks_"+str(key)+".pdf", bbox_inches='tight')
-    plt.close(fig_box_plot)
-    fig_count += 1
+##keys = list(dict_a.keys())
+##keys.sort()
+##
+##for key in keys:
+##    print(dict_a[key], len(dict_a[key][0]))
+##    # box plot
+##    legend = []
+##    fig_box_plot = plt.figure(fig_count, figsize=(10, 6))
+##    plot = fig_box_plot.add_subplot(111)
+##    # print(key, dict_a[key])
+##    bp = plot.boxplot(dict_a[key])
+##    legend.append("number of blocks "+str(key))
+##    set_text_font(x)
+##    fig_box_plot.savefig(OUTPUT_DIRECTORY+"\\number_of_blocks_"+str(key)+".pdf", bbox_inches='tight')
+##    plt.close(fig_box_plot)
+##    fig_count += 1
 
 
 
