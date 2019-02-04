@@ -169,6 +169,9 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_o
     if not filename_suffix:
         filename_suffix = "_ALLFALSE"
 
+    if GC.HETERO_RC:
+        filename_suffix += "_HRC"+str(GC.HETERO_RC)
+
     stat_file = 'statistics'+filename_suffix+'.csv'
     file_path = os.getcwd()+"\\Stats\\"
     if not os.path.exists(file_path):

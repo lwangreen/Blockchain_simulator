@@ -11,24 +11,16 @@ class Nodes:
         self.max_time = max_time_interval * 2
 
         if RSC:
-            if GC.HETERO_RSC:
-                self.next_server_contact_time = random.randint(1, self.max_time)
-            else:
-                self.next_server_contact_time = random.randint(min_time_interval, max_time_interval)
+            self.next_server_contact_time = random.randint(min_time_interval, max_time_interval)
         else:
             self.next_server_contact_time = 0
 
         if RC:
-            if GC.HETERO_RC:
-                self.server_connect_time_interval = random.randint(1, self.max_time)
-            else:
-                self.server_connect_time_interval = random.randint(min_time_interval, max_time_interval)
+            self.server_connect_time_interval = random.randint(min_time_interval, max_time_interval)
         else:
             self.server_connect_time_interval = max_time_interval
 
     def update_next_connect_time(self, time):
-        if GC.HETERO_RC:
-            self.server_connect_time_interval = random.randint(1, self.max_time)
         while self.next_server_contact_time < time:
             self.next_server_contact_time += self.server_connect_time_interval
 
