@@ -133,6 +133,30 @@ def stats_of_num_of_blocks_after_revoked_transactions(num_of_block_after_tran_in
     return num_of_blocks_in_fork, dict_num_of_blocks_in_fork
 
 
+def hetero_disconnection_time_assign(nodes_list, time_interval):
+    num_node_per_group = round(len(nodes_list) / GC.HETERO_RC)
+    count = 0
+    if GC.HETERO_RC > 2:
+        start_mul_factor = 0.5
+    else:
+        start_mul_factor = 1
+
+    while nodes_list:
+        if num_node_per_group == count:
+            count = 0
+            start_mul_factor *= 2
+        selected_node = random.choice(nodes_list)
+        if GC.CONTACT_FREQ == 0:
+            random_start_time = (GC.CONTACT_FREQ + time_interval) * start_mul_factor
+        else:
+            random_start_time = GC.CONTACT_FREQ * start_mul_factor
+        #print("contact freq", GC.CONTACT_FREQ, random_start_time, start_mul_factor, num_node_per_group, count)
+        selected_node.server_connect_time_interval = random.randint(random_start_time,
+                                                                  random_start_time + time_interval)
+        nodes_list.remove(selected_node)
+        count += 1
+
+
 def running():
 
     current_time = 0
@@ -158,6 +182,10 @@ def running():
     for i in range(GC.NUM_OF_NODES):
         nodes_list.append(Nodes(i, min_cfreq_range, max_cfreq_range, GC.RANDOM_START_CONNECT_TIME, GC.RANDOM_CONNECT_TIME))
 
+    if GC.HETERO_RC:
+        hetero_disconnection_time_assign(nodes_list.copy(), time_interval)
+   # for node in nodes_list:
+        # print(node.server_connect_time_interval)
     while current_time < end_time or not is_only_one_blockchain_left(nodes_list):
         # fetch transaction
         if current_time < end_time:
