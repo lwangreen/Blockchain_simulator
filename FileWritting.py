@@ -173,18 +173,17 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_o
         filename_suffix += "_HRC"+str(GC.HETERO_RC)
 
     stat_file = 'statistics'+filename_suffix+'.csv'
-    file_path = os.getcwd()+"\\Stats\\"
-    if not os.path.exists(file_path):
-        os.makedirs(file_path)
-    if not os.path.exists(file_path+stat_file):
-        f = open(os.getcwd()+"\\Stats\\"+stat_file, 'w+')
+    if not os.path.exists(GC.STATS_DIRECTORY):
+        os.makedirs(GC.STATS_DIRECTORY)
+    if not os.path.exists(GC.STATS_DIRECTORY+stat_file):
+        f = open(GC.STATS_DIRECTORY+stat_file, 'w+')
         f.write("Contact time interval, Lastest block timestamp with transactions, Convergence speed, "
                 "Number of blockchain, Length of the longest blockchain, Block index with forks occurred, "
                 "The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks"
                 #"Converge 20%, Converge 40%, Converge 60%, Converge 80%, Converge 100%"
                 +"\n")
         f.close()
-    f = open(os.getcwd()+"\\Stats\\"+stat_file, 'a')
+    f = open(GC.STATS_DIRECTORY+stat_file, 'a')
 
     #converge_progress_string = ""
 

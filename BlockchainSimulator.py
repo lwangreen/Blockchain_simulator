@@ -265,9 +265,10 @@ def main(argv):
 
     try:
         file_suffix = ""
-        opts, args = getopt.getopt(argv, "n:w:c:t:", ["NUM_OF_NODE=", "NUM_OF_WINNERS=", "CONTACT_FREQ=", "TRANS_RATE=",
-                                                      "RANDOM_TRANS=","RANDOM_WINNERS=", "RANDOM_CONNECT=",
-                                                      "RANDOM_START_CONNECT=", "HETERO_RSC=", "HETERO_RC="])
+        opts, args = getopt.getopt(argv, "n:w:c:t:o:", ["NUM_OF_NODE=", "NUM_OF_WINNERS=", "CONTACT_FREQ=",
+                                                        "TRANS_RATE=", "STATS_FILE=", "RANDOM_TRANS=","RANDOM_WINNERS=",
+                                                        "RANDOM_CONNECT=", "RANDOM_START_CONNECT=", "HETERO_RSC=",
+                                                        "HETERO_RC="])
 
         for opt, arg in opts:
             if opt in ("-n", "--NUM_OF_NODE"):
@@ -282,6 +283,8 @@ def main(argv):
             elif opt in ("-t", "--TRANS_RATE"):
                 GC.TRANS_RATE = int(arg)
                 file_suffix += "_" + arg
+            elif opt in ("-o", "--STATS_FILE"):
+                GC.STATS_DIRECTORY = os.getcwd()+"\\"+arg+"\\"
             elif opt in ("--RANDOM_TRANS"):
                 GC.RANDOM_TRANS = eval(arg)
                 if GC.RANDOM_TRANS:
