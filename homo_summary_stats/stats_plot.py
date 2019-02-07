@@ -10,18 +10,20 @@ def set_text_font():
     plt.legend(legend, fontsize=10, loc='upper left')
 
 
-def set_y_label(num):
-    if num == 0:
+def set_y_label(file):
+    if file == "avg_num_of_block.csv":
         return "Average number of blocks after revoked transaction"
-    elif num == 1:
+    elif file == "block_index_with_transaction.csv":
         return "Index number of the latest block with transactions"
-    elif num == 2:
+    elif file == "convergence_speed.csv":
         return "Convergence speed(s)"
-    elif num == 3:
+    elif file == "latest_block_timestamp.csv":
         return "Timestamp of latest block generation(s)"
-    elif num == 4:
+    elif file == "length_of_blockchain.csv":
+        return "Length of blockchain"
+    elif file == "max_num_of_block.csv":
         return "Maximum number of blocks after revoked transaction"
-    elif num == 5:
+    elif file == "num_of_blockchain.csv":
         return "Number of blockchain forks"
     
 
@@ -61,7 +63,7 @@ for file in stats_files:
         X_FILLED = True
         f.close()
         location = [(0, 0), (0, 2), (0, 4)]
-        fig = plt.figure(fig_count, figsize=(30, 7))
+        fig = plt.figure(fig_count, figsize=(40, 7))
         for num in range(0, 3):
             legend = []
             
@@ -72,7 +74,7 @@ for file in stats_files:
                 subplot.plot(x, x_cols[num2])
                 legend.append(line_names[num2][:15].replace("_", " "))
             plt.xlabel("Connect idle time range(s)")
-            plt.ylabel(set_y_label(stats_files.index(file)))
+            plt.ylabel(set_y_label(file))
             set_text_font()
 
 ##            if "winners3" in legend[0]:
@@ -85,7 +87,7 @@ for file in stats_files:
         plt.close(fig)
         fig_count += 1
         
-        fig = plt.figure(fig_count, figsize=(30, 14))
+        fig = plt.figure(fig_count, figsize=(40, 14))
         location = [(0, 0), (0, 2), (0, 4), (5, 1), (5, 3)]
         location_index = 0
         subplot = None
@@ -98,7 +100,7 @@ for file in stats_files:
                 legend = []
                 location_index += 1
             plt.xlabel("Connect idle time range(s)")
-            plt.ylabel(set_y_label(stats_files.index(file)))
+            plt.ylabel(set_y_label(file))
             subplot.plot(x, x_cols[num])
             legend.append(line_names[num][:15].replace("_", " "))
             set_text_font()
