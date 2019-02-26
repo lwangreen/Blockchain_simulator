@@ -1,0 +1,12 @@
+call autorun_hetero.bat 20 3 2 Stats3
+call autorun_hetero.bat 20 3 3 Stats3
+call autorun_hetero.bat 20 3 4 Stats3
+call autorun_hetero.bat 20 3 2 Stats4
+call autorun_hetero.bat 20 3 3 Stats4
+call autorun_hetero.bat 20 3 4 Stats4
+call autorun_hetero.bat 20 3 2 Stats5
+call autorun_hetero.bat 20 3 3 Stats5
+call autorun_hetero.bat 20 3 4 Stats5
+call autorun_hetero.bat 20 3 2 Stats6
+call autorun_hetero.bat 20 3 3 Stats6
+call autorun_hetero.bat 20 3 4 Stats6
