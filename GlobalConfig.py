@@ -11,5 +11,6 @@ RANDOM_START_CONNECT_TIME = True  # _RSC
 RANDOM_CONNECT_TIME = True  # _RC
 OUTPUT_FILE = ""
 STATS_DIRECTORY = os.getcwd()+"\\Stats\\"
+HETERO_DIRECTORY = os.getcwd()+"\\Hetero_log\\"
 HETERO_RSC = False
 HETERO_RC = False

@@ -134,8 +134,10 @@ def stats_of_num_of_blocks_after_revoked_transactions(num_of_block_after_tran_in
 
 
 def hetero_disconnection_time_assign(nodes_list, time_interval):
+    hetero_groups = [[] for i in range(GC.HETERO_RC)]
     num_node_per_group = round(len(nodes_list) / GC.HETERO_RC)
     count = 0
+    group_index = 0
     if GC.HETERO_RC > 2:
         start_mul_factor = 0.5
     else:
@@ -145,16 +147,19 @@ def hetero_disconnection_time_assign(nodes_list, time_interval):
         if num_node_per_group == count:
             count = 0
             start_mul_factor *= 2
+            group_index += 1
         selected_node = random.choice(nodes_list)
         if GC.CONTACT_FREQ == 0:
             random_start_time = (GC.CONTACT_FREQ + time_interval) * start_mul_factor
         else:
             random_start_time = GC.CONTACT_FREQ * start_mul_factor
-        #print("contact freq", GC.CONTACT_FREQ, random_start_time, start_mul_factor, num_node_per_group, count)
         selected_node.server_connect_time_interval = random.randint(random_start_time,
                                                                   random_start_time + time_interval)
+        hetero_groups[group_index].append(selected_node.id)
         nodes_list.remove(selected_node)
         count += 1
+    print(hetero_groups)
+    return hetero_groups
 
 
 def running():
@@ -183,7 +188,7 @@ def running():
         nodes_list.append(Nodes(i, min_cfreq_range, max_cfreq_range, GC.RANDOM_START_CONNECT_TIME, GC.RANDOM_CONNECT_TIME))
 
     if GC.HETERO_RC:
-        hetero_disconnection_time_assign(nodes_list.copy(), time_interval)
+        hetero_groups = hetero_disconnection_time_assign(nodes_list.copy(), time_interval)
    # for node in nodes_list:
         # print(node.server_connect_time_interval)
     while current_time < end_time or not is_only_one_blockchain_left(nodes_list):
@@ -258,6 +263,8 @@ def running():
     # FileWritting.write_statistics_into_file(blockchain_list, blockchain_owner, entire_transaction_list,
                                             # num_of_blocks_in_fork)
     FileWritting.write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_of_blocks_in_fork)
+    if GC.HETERO_RC:
+        FileWritting.write_heterogeneity_log_into_file(blockchain_list, hetero_groups)
     print("FINISH")
 
 

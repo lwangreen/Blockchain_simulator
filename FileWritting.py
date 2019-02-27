@@ -122,6 +122,28 @@ def write_statistics_into_file(blockchain_list, blockchain_owner, entire_transac
     f2.close()
 
 
+def generate_filename_suffix():
+    filename_suffix = ""
+    filename_suffix += "_node"+str(GC.NUM_OF_NODES)
+    filename_suffix += "_winners"+str(GC.NUM_OF_WINNERS)
+    if GC.RANDOM_TRANS:
+        filename_suffix += "_RT"
+    if GC.RANDOM_WINNERS:
+        filename_suffix += "_RW"
+    if GC.RANDOM_START_CONNECT_TIME:
+        filename_suffix += "_RSC"
+    if GC.RANDOM_CONNECT_TIME:
+        filename_suffix += "_RC"
+
+    if not filename_suffix:
+        filename_suffix = "_ALLFALSE"
+
+    if GC.HETERO_RC:
+        filename_suffix += "_HRC"+str(GC.HETERO_RC)
+
+    return filename_suffix
+
+
 def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_of_blocks_in_fork):
     import BlockchainSimulator as BS
 
@@ -129,7 +151,6 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_o
     length_longest_blockchain = 0
     last_block_index_with_trans = 0
     last_block_timestamp_with_trans = 0
-    filename_suffix = ""
 
     for blockchain in blockchain_list:
         if blockchain[-1]['time'] > last_block_timestamp:
@@ -155,22 +176,7 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_o
     if different_block_index == 0:
         different_block_index = "None"
 
-    filename_suffix += "_node"+str(GC.NUM_OF_NODES)
-    filename_suffix += "_winners"+str(GC.NUM_OF_WINNERS)
-    if GC.RANDOM_TRANS:
-        filename_suffix += "_RT"
-    if GC.RANDOM_WINNERS:
-        filename_suffix += "_RW"
-    if GC.RANDOM_START_CONNECT_TIME:
-        filename_suffix += "_RSC"
-    if GC.RANDOM_CONNECT_TIME:
-        filename_suffix += "_RC"
-
-    if not filename_suffix:
-        filename_suffix = "_ALLFALSE"
-
-    if GC.HETERO_RC:
-        filename_suffix += "_HRC"+str(GC.HETERO_RC)
+    filename_suffix = generate_filename_suffix()
 
     stat_file = 'statistics'+filename_suffix+'.csv'
     if not os.path.exists(GC.STATS_DIRECTORY):
@@ -199,10 +205,44 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_o
     for i in sorted_keys:
         occurance_num_of_blocks_string += str(i)+": "+str(dict_num_of_blocks_in_fork[i]) + ", "
     occurance_num_of_blocks_string = occurance_num_of_blocks_string[:-2]
-    f.write(str(GC.CONTACT_FREQ) + "-"+str(GC.CONTACT_FREQ+600) + ", "+str(last_block_timestamp_with_trans) + ", " +
+    f.write(str(GC.CONTACT_FREQ) + "-"+str(GC.CONTACT_FREQ+600) + ", " +str(last_block_timestamp_with_trans) + ", " +
             str(last_block_timestamp) + ", "+str(len(blockchain_list)) + ", " + str(length_longest_blockchain) + ", " +
             str(different_block_index) + ", " + str(last_block_index_with_trans) + ", " +
             str(max(num_of_blocks_in_fork)) + ", " + str(min(num_of_blocks_in_fork)) + ", " +
             str(sum(num_of_blocks_in_fork)/len(num_of_blocks_in_fork)) + #", " + converge_progress_string
-            ", "+ occurance_num_of_blocks_string + "\n")
+            ", " + occurance_num_of_blocks_string + "\n")
+    f.close()
+
+
+def write_heterogeneity_log_into_file(blockchain_list, hetero_groups):
+    last_index_converged_partial_blockchain = 0
+    winner_time = {}
+    while last_index_converged_partial_blockchain < len(blockchain_list[0]):
+        if is_block_different(last_index_converged_partial_blockchain, blockchain_list):
+            break
+        else:
+            last_index_converged_partial_blockchain += 1
+
+    for block in blockchain_list[0][:last_index_converged_partial_blockchain+1]:
+        for group_index in range(GC.HETERO_RC):
+            if group_index not in winner_time.keys():
+                winner_time[group_index] = 0
+            if block['block generator'] in hetero_groups[group_index]:
+                winner_time[group_index] += 1
+
+    filename_suffix = generate_filename_suffix()
+
+    stat_file = 'hetero_fairness'+filename_suffix+'.csv'
+    if not os.path.exists(GC.HETERO_DIRECTORY):
+        os.makedirs(GC.HETERO_DIRECTORY)
+
+        f = open(GC.HETERO_DIRECTORY + stat_file, 'w+')
+        f.write("Contact time interval, Length of blockchain, Heterogeneous group winners" + "\n")
+        f.close()
+
+    f = open(GC.HETERO_DIRECTORY + stat_file, 'a')
+    winner_time_string = ""
+    for i in winner_time.keys():
+        winner_time_string += str(i) + ": " + str(winner_time[i]) + ", "
+    f.write(str(GC.CONTACT_FREQ) + "-" + str(GC.CONTACT_FREQ+600) + ", " + winner_time_string + "\n")
     f.close()
