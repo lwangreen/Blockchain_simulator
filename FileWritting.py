@@ -237,7 +237,7 @@ def write_heterogeneity_log_into_file(blockchain_list, hetero_groups):
         os.makedirs(GC.HETERO_DIRECTORY)
 
         f = open(GC.HETERO_DIRECTORY + stat_file, 'w+')
-        f.write("Contact time interval, Length of blockchain, Heterogeneous group winners" + "\n")
+        f.write("Contact time interval, Heterogeneous group winners" + "\n")
         f.close()
 
     f = open(GC.HETERO_DIRECTORY + stat_file, 'a')
