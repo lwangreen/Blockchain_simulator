@@ -233,7 +233,7 @@ def write_heterogeneity_log_into_file(blockchain_list, hetero_groups):
     filename_suffix = generate_filename_suffix()
 
     stat_file = 'hetero_fairness'+filename_suffix+'.csv'
-    if not os.path.exists(GC.HETERO_DIRECTORY):
+    if not os.path.exists(GC.HETERO_DIRECTORY + stat_file):
         os.makedirs(GC.HETERO_DIRECTORY)
 
         f = open(GC.HETERO_DIRECTORY + stat_file, 'w+')
@@ -244,5 +244,6 @@ def write_heterogeneity_log_into_file(blockchain_list, hetero_groups):
     winner_time_string = ""
     for i in winner_time.keys():
         winner_time_string += str(i) + ": " + str(winner_time[i]) + ", "
+    winner_time_string = winner_time_string[:-2]
     f.write(str(GC.CONTACT_FREQ) + "-" + str(GC.CONTACT_FREQ+600) + ", " + winner_time_string + "\n")
     f.close()

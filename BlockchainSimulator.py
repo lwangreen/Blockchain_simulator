@@ -292,6 +292,7 @@ def main(argv):
                 file_suffix += "_" + arg
             elif opt in ("-o", "--STATS_FILE"):
                 GC.STATS_DIRECTORY = os.getcwd()+"\\"+arg+"\\"
+                GC.HETERO_DIRECTORY += arg + "\\"
             elif opt in ("--RANDOM_TRANS"):
                 GC.RANDOM_TRANS = eval(arg)
                 if GC.RANDOM_TRANS:
