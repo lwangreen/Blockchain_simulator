@@ -87,7 +87,7 @@ class NodeBlockchain:
                     if transaction not in other_node.approved_transactions:
                         self.mempool = transaction
                         self.approved_transactions.remove(transaction)
-                        num_of_blocks_after_removed_transactions.append(len(self.chain) - 1 - block_index)
+                        num_of_blocks_after_removed_transactions.append(len(self.chain) - block_index)
 
             self.chain = other_node.chain.copy()
 
