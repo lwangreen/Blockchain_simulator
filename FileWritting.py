@@ -183,6 +183,8 @@ def write_csv_statistics_file(blockchain_list, num_of_blocks_in_fork, dict_num_o
         os.makedirs(GC.STATS_DIRECTORY)
     if not os.path.exists(GC.STATS_DIRECTORY+stat_file):
         f = open(GC.STATS_DIRECTORY+stat_file, 'w+')
+        f.write("Nodes: "+str(GC.NUM_OF_NODES)+" Winners: "+str(GC.NUM_OF_WINNERS)+" RSC: "+str(GC.RANDOM_START_CONNECT_TIME)
+                +" RC: "+str(GC.RANDOM_CONNECT_TIME)+" RW: "+str(GC.RANDOM_WINNERS)+" RT: "+str(GC.RANDOM_TRANS))
         f.write("Contact time interval, Lastest block timestamp with transactions, Convergence speed, "
                 "Number of blockchain, Length of the longest blockchain, Block index with forks occurred, "
                 "The last block contains transactions, Max num of blocks, Min num of blocks, Avg num of blocks"

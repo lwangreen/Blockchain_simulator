@@ -177,12 +177,12 @@ def running():
     if not GC.RANDOM_TRANS:
         current_period_end_time = 10000
         current_transactions_within_10000 = []
-        f = open(os.getcwd() + "\\Created_data_trace\\transaction_"+str(GC.TRANS_RATE)+".txt", 'r')
+        f = open(os.getcwd() + "\\Created_data_trace\\transaction_nodes_"+str(GC.NUM_OF_NODES)+".txt", 'r')
 
     if not GC.RANDOM_WINNERS:
         current_period_end_time = 10000
         current_winners_within_10000 = []
-        f2 = open(os.getcwd() +"\\Created_data_trace\\winners_long.txt", 'r')
+        f2 = open(os.getcwd() +"\\Created_data_trace\\nodes"+str(GC.NUM_OF_NODES)+"_winners"+str(GC.NUM_OF_WINNERS)+"_long.txt", 'r')
 
     for i in range(GC.NUM_OF_NODES):
         nodes_list.append(Nodes(i, min_cfreq_range, max_cfreq_range, GC.RANDOM_START_CONNECT_TIME, GC.RANDOM_CONNECT_TIME))
