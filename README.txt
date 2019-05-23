@@ -78,4 +78,7 @@ Procedures:
 				- resolve conflict
 	- Move to next time slot
 - Write blockchain information and statistics into appropriate files
- 
+
+Mistakes:
+Wrong understanding on 6 blocks convention. Need to fix the code (and the statistics recollection and graph generation etc......).
+Statistics is stored under the path /Blockchain statistics backup/Blockchain DTN
